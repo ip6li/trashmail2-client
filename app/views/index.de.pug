@@ -1,0 +1,77 @@
+extends layout
+
+block navigation
+    img(src="/images/site-logo.png", id="site-logo", alt="Site Logo")
+
+    h1= title
+
+block header
+
+    p(id='intro').
+        Sie brauchen schnell mal eine E-Mail Adresse für die Anmeldung bei einer Webseite.
+        Z.B. um einen Download zu machen und die Anmeldung ist nur mit Angabe einer gültigen
+        E-Mail Adresse möglich? Z.B. weil auf der Webseite ein Bestätigungslink per Mail gesendet wird.
+        Dann verwenden Sie doch eine Wegwerf E-Mail Adresse.
+        Diese Wegwerf E-Mail Adresse gibt es sofort und ohne Anmeldung direkt bei uns.
+        So können Sie verhindern, dass Ihr Posteingang mit Spam überflutet wird.
+
+    p Die Mails werden nach 3h automatisch gelöscht
+
+    p Auch über Tor erreichbar:
+        a(href="http://c7pkplr3a3i7kn3z.onion") http://c7pkplr3a3i7kn3z.onion
+
+    p(style="font-weight: bold; color: red") Sicherheitshinweis:&nbsp;
+        span(style="font-weight: normal; color: black").
+            Mails, die Seiteninhalte von externen, nicht verschlüsselten Servern einbinden
+            führen zu einer Zertifikatswarnung.
+
+block form
+    form(id="tmform", name="email", class="form", action="/", method="get")
+
+        p(class="formHeader") One-Time Mailadresse
+
+        div(class="formSection")
+            div(class="formElement")
+                input(type="text", id="name", name="user")
+
+            span(class="at") @
+
+            div(class="formElement")
+                select(id="domain", name="domain")
+                    each domain in validDomains
+                        option(value=domain) #{domain}
+
+        div(class="formSection")
+            input(id="submit",type="button", value="Senden")
+
+    div(id="divmailaddress", class="divmailaddress")
+        div(id="divmailaddress2", class="divmailaddress2") Mail Adresse:
+            br()
+            span(id="mailaddress")
+        span(id="qrcode")
+
+block mails
+
+    p(id='mails_for', class='mails_for')
+        span(id='mails_for_label') Mails für:&nbsp;
+        span(id='divrcpt', class='mails_for')
+        br()
+        span().
+            Datum:&nbsp;
+        span(id='div_rcpt_date', class='mails_for')!= serverTimeDate
+
+    div(class='mails' id='mails')!= mails
+
+block footer
+    include copyright
+
+    p(id='p_impressum')
+        button(id="b_impressum") Impressum
+
+    div(id="dialogDelete", class="hidden", title="Basic dialog")
+
+    div(id="impressum", class="hidden", title="Impressum")
+
+block noscript
+    div(id="noscript").
+        Bitte aktivieren Sie JavaScript, damit Sie diese Seite nutzen können

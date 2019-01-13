@@ -1,0 +1,208 @@
+#!/usr/bin/env node
+
+/*
+ * Copyright (c) 2016. by Christian Felsing
+ * This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU Affero General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU Affero General Public License for more details.
+ *
+ *     You should have received a copy of the GNU Affero General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+/* jshint node: true */
+/*jshint esversion: 6 */
+
+(function () {
+    "use strict";
+
+    /**
+     * Module dependencies.
+     */
+    const minRequiredNodejsVersion = [ "v6", "10"];
+    const logger = require("../logger").logger;
+    const setLogLevel = require ("../logger").setLogLevel;
+    const app = require('../app');
+    const debug = require('debug')('node-test-01:server');
+    const cluster = require('cluster');
+    const http = require('http');
+    const childProcess = require("child_process");
+    const fs = require("fs");
+    const numCPUs = require('os').cpus().length;
+    const Lib = require("../lib").Lib;
+    const Config = require("../config").Config;
+    const config = Config.getConfig();
+    const cacheDir = config.cachedir ? config.cachedir : "cache";
+
+    let server = {};
+
+
+    const checkEnvironment = function () {
+        const v = process.version.toString();
+        const versions = v.split(/\./);
+        if (versions[0] < minRequiredNodejsVersion[0] && versions[1] < minRequiredNodejsVersion[1]) {
+            const msg = v + " is too old";
+            logger.log("error", msg);
+            return new Error(msg);
+        }
+
+        if (process.config.variables.icu_small) {
+            try {
+                require("full-icu");
+                if (config.NODE_ICU_DATA) {
+                    process.env.NODE_ICU_DATA = config.NODE_ICU_DATA;
+                } else {
+                    process.env.NODE_ICU_DATA = "node_modules/full-icu";
+                }
+                logger.log ("info", "using full-icu with NODE_ICU_DATA = " + process.env.NODE_ICU_DATA);
+            } catch (err) {
+                logger.log ("warn", "full-icu not found, using icu small is used, your milage will vary. " +
+                    "Please consider to install full-icu with \"npm install full-icu\"");
+                logger.log ("warn", err);
+            }
+        } else {
+            logger.log("info", "system provided icu used, that is good.");
+        }
+    };
+
+
+    const uglifyjs = function (src, dest) {
+        const uglify_params = "--compress";
+
+        childProcess.execSync("./node_modules/uglify-es/bin/uglifyjs " + src + " " + uglify_params + " --output " + dest);
+    };
+
+
+    const uglifycss = function (src, dest) {
+        childProcess.execSync("node_modules/uglifycss/uglifycss " + src + " > " + dest);
+    };
+
+
+    const initFilesystem = function () {
+        const src_mainjs = "public/javascripts/main.js";
+        const dest_mainjs = Lib.get_minified("mainjs").minified_filepath;
+        uglifyjs(src_mainjs, dest_mainjs);
+
+        const src_styles = "public/stylesheets/style.css";
+        const dest_styles = Lib.get_minified("styles").minified_filepath;
+        uglifycss(src_styles, dest_styles);
+
+        try {
+            fs.mkdirSync(cacheDir);
+        } catch (err) {
+            logger.log ("debug", "cache dir " + cacheDir + " already exists");
+        }
+    };
+
+
+    checkEnvironment();
+
+    initFilesystem();
+
+
+    /**
+     * Get port from environment and store in Express.
+     */
+
+    const port = normalizePort(process.env.PORT || '3000');
+    let address = process.env.ADDRESS;
+    if (typeof address === "undefined") {
+        address = "127.0.0.1";
+    }
+
+    app.set('port', port);
+
+    if (cluster.isMaster) {
+        if (app.get('env') === 'development') {
+            setLogLevel("debug");
+            logger.log("warn", "Running in development mode");
+        } else {
+            setLogLevel("info");
+            logger.log("info", "Running in production mode");
+        }
+
+
+        // Fork workers.
+        for (let i = 0; i < numCPUs; i++) {
+            cluster.fork();
+        }
+
+        cluster.on('exit', (worker, code, signal) => {
+            logger.log(`worker ${worker.process.pid} died`, code, signal);
+            cluster.fork();
+        });
+    } else {
+        // Workers can share any TCP connection
+        // In this case it is an HTTP server
+
+        server = http.createServer(app);
+
+        server.listen(port, address);
+        server.on('error', onError);
+        server.on('listening', onListening);
+    }
+
+    /**
+     * Normalize a port into a number, string, or false.
+     */
+
+    function normalizePort(val) {
+        const port = parseInt(val, 10);
+
+        if (isNaN(port)) {
+            // named pipe
+            return val;
+        }
+
+        if (port >= 0) {
+            // port number
+            return port;
+        }
+
+        return false;
+    }
+
+    /**
+     * Event listener for HTTP server "error" event.
+     */
+
+    function onError(error) {
+        if (error.syscall !== 'listen') {
+            throw error;
+        }
+
+        const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
+
+        // handle specific listen errors with friendly messages
+        switch (error.code) {
+            case 'EACCES':
+                logger.log ("error", bind + ' requires elevated privileges');
+                process.exit(1);
+                break;
+            case 'EADDRINUSE':
+                logger.log ("error", bind + ' is already in use');
+                process.exit(1);
+                break;
+            default:
+                throw error;
+        }
+    }
+
+    /**
+     * Event listener for HTTP server "listening" event.
+     */
+
+    function onListening() {
+        const addr = server.address();
+        const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+        debug('Listening on ' + bind);
+    }
+
+}());

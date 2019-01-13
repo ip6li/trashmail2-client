@@ -1,0 +1,73 @@
+extends layout
+
+block navigation
+    img(src="/images/site-logo.png", id="site-logo", alt="Site Logo")
+
+    h1= title
+
+block header
+
+    p(id='intro').
+        You need an e-mail address quickly for sign on at a web site, e.g. to download or
+        to get information? Use a trashmail address then. This trashmail address
+        is delivered instantly without sign on here.
+        This is the way to avoid unwanted spam in your mail in box.
+
+    p Mails are deleted 3h after received.
+
+    p Also available via Tor:
+        a(href="http://example.onion") http://example.onion
+
+    p(style="font-weight: bold; color: red") Security advisory:&nbsp;
+        span(style="font-weight: normal; color: black").
+            Mails, which are loading external content without encrypion
+            will cause a browser security warning regarding certificate.
+
+block form
+    form(id="tmform", name="email", class="form", action="/", method="get")
+
+        p(class="formHeader") One-Time Mailaddress
+
+        div(class="formSection")
+            div(class="formElement")
+                input(type="text", id="name", name="user")
+
+            span(class="at") @
+
+            div(class="formElement")
+                select(id="domain", name="domain")
+                    each domain in validDomains
+                        option(value=domain) #{domain}
+
+        div(class="formSection")
+            input(id="submit",type="button", value="Send")
+
+    div(id="divmailaddress", class="divmailaddress")
+        div(id="divmailaddress2", class="divmailaddress2") Mail address:
+            br()
+            span(id="mailaddress")
+        span(id="qrcode")
+
+block mails
+
+    p(id='mails_for', class='mails_for')
+        span(id='mails_for_label') Mails for:&nbsp;
+        span(id='divrcpt', class='mails_for')
+        br()
+        span(id='div_rcpt_date', class='mails_for')!= serverTimeDate
+
+    div(class='mails' id='mails')!= mails
+
+block footer
+    include copyright
+
+    p(id='p_impressum')
+        button(id="b_impressum") Impress
+
+    div(id="dialogDelete", class="hidden", title="Basic dialog")
+
+    div(id="impressum", class="hidden", title="Impress")
+
+block noscript
+    div(id="noscript").
+        Please activate JavaScript to use that page.
