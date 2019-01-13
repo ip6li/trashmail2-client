@@ -80,9 +80,19 @@
             );
         }
 
+        static deleteMail(driver, xpath) {
+            //*[@id="delete_b087d5947292a889a279ee9bb6cffde2_0f3f2bd6d38fb456996e474c7422d28ed8d3f5c881e0d3e01e03e41d4d9851be"]
+            return driver.findElement(
+                By.xpath(xpath)
+            ).click();
+        }
+
         static doTest() {
             (async function example() {
-                let driver = await new Builder().forBrowser('firefox').build();
+                let driver = await new Builder()
+                    .forBrowser('firefox')
+                    .build();
+
                 try {
                     await driver.get('http://localhost:3000');
 
@@ -92,26 +102,63 @@
 
                     await driver.wait(Steps.domain_select(driver).click(), 5000);
 
-                    //await driver.wait(until.elementLocated(By.xpath("//*[@id=\"xxxxxx\"]")), 15000);
-
                     await driver.wait(Steps.user_click(driver), 5000);
 
-                    await driver.wait(until.elementLocated(By.xpath("//*[@id=\"to\"]")), 15000);
+                    const xpath_to = "//*[@id=\"to\"]";
+                    await driver.wait(until.elementLocated(By.xpath(xpath_to)), 5000);
 
                     await driver.wait(
                         function () {
-                            const found = driver.findElement(By.xpath("//*[@id=\"to\"]"));
+                            const found = driver.findElement(By.xpath(xpath_to));
                             return found.getText().then((text)=>{
                                 return Promise.resolve(text);
                             });
                         },
                         5000
                     ).then((data) => {
-                        console.log("Test succeeded with result: %o", data);
+                        console.log("Test 1 succeeded with result: %o", data);
                         return Promise.resolve(data);
                     }).catch((err) => {
-                        console.log("%o", err.message);
+                        console.log("Test 1: %o", err.message);
                     });
+
+                    const xpath_delete="//*[contains(@id,'delete_')]";
+                    await driver.wait(until.elementLocated(By.xpath(xpath_delete)), 5000);
+
+                    await driver.wait(
+                        function () {
+                            return Steps.deleteMail(driver, xpath_delete).then((text)=> {
+                                return Promise.resolve(text);
+                            });
+                        },
+                        5000
+                    );
+
+                    const xpath_delete_confirm = "/html/body/div[3]/div[11]/div/button[1]";
+                    await driver.wait(
+                        until.elementLocated(
+                            By.className("ui-dialog-buttonset")
+                        ),
+                        5000
+                    ).then(()=>{
+                        console.log("buttonset found");
+                    });
+
+                    await driver.wait(
+                        function () {
+                            return Steps.deleteMail(driver, xpath_delete_confirm).then((text)=> {
+                                return Promise.resolve(text);
+                            });
+                        },
+                        5000
+                    ).then((data) => {
+                        console.log("Test 2 succeeded with result: %o", data);
+                        return Promise.resolve(data);
+                    }).catch((err) => {
+                        console.log("Test 2: %o", err.message);
+                    });
+
+
                 } finally {
                     await driver.quit();
                 }
