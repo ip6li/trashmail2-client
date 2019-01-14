@@ -1,15 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import Select
-import lxml.etree
 import os
-import io
 import time
+import sys
+import signal
+
+try:
+    from selenium import webdriver
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+    from selenium.webdriver.support.ui import Select
+    from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+    from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+except Exception as e:
+    print("Selenium for Python3 missing, please consider to install:")
+    print("dnf install python3-selenium")
+
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
@@ -21,19 +29,31 @@ os.environ['PATH'] = "./test-libs"
 # Make sure that your chromedriver is in your PATH, and use the following line...
 #
 # driver = webdriver.Chrome()
-driver = webdriver.Firefox()
 #
 # ... or, you can put the path inside the call like this:
 # driver = webdriver.Chrome("/path/to/chromedriver")
 #
+if os.path.isfile("/usr/lib64/firefox/firefox"):
+    binary = FirefoxBinary("/usr/lib64/firefox/firefox")
+elif os.path.isfile("/usr/lib/firefox/firefox"):
+    binary = FirefoxBinary("/usr/lib/firefox/firefox")
+elif os.path.isFile("/Applications/Firefox.app/Contents/MacOS/firefox-bin"):
+    binary = FirefoxBinary("/Applications/Firefox.app/Contents/MacOS/firefox-bin")
+else:
+    print("unsupported operating system")
+    sys.exit(1)
+driver = webdriver.Firefox(firefox_binary=binary)
 
-parser = lxml.etree.HTMLParser()
 
 driver.implicitly_wait(15)
 
 driver.get("http://localhost:3000")
 
 screen_count = 0
+
+
+def sig_handler(signum, frame):
+    sys.exit()
 
 
 def send_mail():
@@ -128,11 +148,16 @@ def delete_mail():
         driver.save_screenshot("screen.png")
 
 
+
+signal.signal(signal.SIGTERM, sig_handler)
+signal.signal(signal.SIGINT, sig_handler)
+
 send_mail()
 
 load_mails()
-delete_mail()
+time.sleep(3)
 
-time.sleep(10)
+delete_mail()
+time.sleep(3)
 
 driver.quit()

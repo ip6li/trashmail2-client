@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "install": "./selenium-setup",
-    "test": "./test.sh",
-    "test-main": "mocha test-main"
+    "test1": "./test.sh",
+    "test2": "./test.py"
   },
   "devDependencies": {
     "jshint": "^2.9.2",
