@@ -194,6 +194,7 @@
             dialogClass: "no-close",
             buttons: [
                 {
+                    id: "delete",
                     text: "Löschen",
                     click: function () {
                         requestDelete(encryptedUid);
