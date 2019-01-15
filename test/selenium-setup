@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 macos_url="https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-macos.tar.gz"
 linux_url="https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux64.tar.gz"
