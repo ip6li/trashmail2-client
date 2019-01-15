@@ -13,4 +13,4 @@ npm-debug.log
 test.js
 test/test-libs
 test/geckodriver.log
-test/screen.png
+test/screen.*.png

@@ -79,6 +79,17 @@ def send_mail():
     server.close()
 
 
+def do_screenshot(driver):
+    global screen_count
+
+    filename = "screenshot." + str(screen_count) + ".png"
+    try:
+        driver.save_screenshot(filename)
+        screen_count = screen_count + 1
+    except Exception as e:
+        print("Error while saving screenshot: " + e)
+
+
 def load_mails():
     submit_button = None
     try:
@@ -87,27 +98,27 @@ def load_mails():
         )
     except Exception as e:
         print(e)
-        driver.save_screenshot('screen.png')
+    do_screenshot(driver)
 
     try:
         user_input = driver.find_element_by_xpath("//*[@id=\"name\"]")
         user_input.send_keys("joe.test")
     except Exception as e:
         print(e)
-        driver.save_screenshot('screen.png')
+    do_screenshot(driver)
 
     try:
         select = Select(driver.find_element_by_xpath('//*[@id="domain"]'))
         select.select_by_visible_text("example.com")
     except Exception as e:
         print(e)
-        driver.save_screenshot('screen.png')
+    do_screenshot(driver)
 
     try:
         submit_button.click()
     except Exception as e:
         print(e)
-        driver.save_screenshot("screen.png")
+        do_screenshot(driver)
 
     try:
         to = WebDriverWait(driver, 10).until(
@@ -116,7 +127,7 @@ def load_mails():
         print(to.text)
     except Exception as e:
         print(e)
-        driver.save_screenshot("screen.png")
+    do_screenshot(driver)
 
 
 def delete_mail():
@@ -127,16 +138,8 @@ def delete_mail():
         delete_icon.click()
     except Exception as e:
         print(e)
-        driver.save_screenshot("screen.png")
+    do_screenshot(driver)
 
-    try:
-        delete_icon = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//*[contains(@id,'delete_')]"))
-        )
-        delete_icon.click()
-    except Exception as e:
-        print(e)
-        driver.save_screenshot("screen.png")
 
     try:
         delete_confirm = WebDriverWait(driver, 10).until(
@@ -146,8 +149,7 @@ def delete_mail():
     except Exception as e:
         print("delete confirm")
         print(e)
-        driver.save_screenshot("screen.png")
-
+    do_screenshot(driver)
 
 
 signal.signal(signal.SIGTERM, sig_handler)
@@ -156,9 +158,6 @@ signal.signal(signal.SIGINT, sig_handler)
 send_mail()
 
 load_mails()
-time.sleep(3)
-
 delete_mail()
-time.sleep(3)
 
 driver.quit()
