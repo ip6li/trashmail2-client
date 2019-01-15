@@ -5,6 +5,7 @@ import os
 import time
 import sys
 import signal
+import platform
 
 try:
     from selenium import webdriver
@@ -37,7 +38,7 @@ if os.path.isfile("/usr/lib64/firefox/firefox"):
     binary = FirefoxBinary("/usr/lib64/firefox/firefox")
 elif os.path.isfile("/usr/lib/firefox/firefox"):
     binary = FirefoxBinary("/usr/lib/firefox/firefox")
-elif os.path.isFile("/Applications/Firefox.app/Contents/MacOS/firefox-bin"):
+elif platform.system() == "Darwin":
     binary = FirefoxBinary("/Applications/Firefox.app/Contents/MacOS/firefox-bin")
 else:
     print("unsupported operating system")
