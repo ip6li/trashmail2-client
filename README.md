@@ -1,7 +1,7 @@
 Trashmail
 =========
 
-[![Build Status](https://travis-ci.org/ip6li/trashmail2.svg?branch=master)](https://travis-ci.org/ip6li/trashmail2)
+[![Build Status](https://travis-ci.org/ip6li/trashmail-tester.svg?branch=master)](https://travis-ci.org/ip6li/trashmail-tester)
 
 Provides a web gui for a disposable mail system. It is written in JavaScript/NodeJS
 and uses Express/PUG for templating.
