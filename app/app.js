@@ -216,6 +216,6 @@
 
 
     Private.setupApp();
-    module.exports = app;
+    module.exports.trashmailApp = app;
 
 }());

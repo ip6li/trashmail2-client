@@ -5,7 +5,10 @@
   "private": true,
   "scripts": {
     "test": "./test.sh",
-    "start": "bin/www"
+    "start": "bin/www",
+    "uglify_js": "./node_modules/uglify-es/bin/uglifyjs public/javascripts/main.js --compress --output public/javascripts/main.min.js",
+    "uglify_css": "./node_modules/uglifycss/uglifycss public/stylesheets/style.css --output public/stylesheets/style.min.css",
+    "postinstall": "npm run uglify_js && npm run uglify_css"
   },
   "dependencies": {
     "body-parser": "~1.18.3",

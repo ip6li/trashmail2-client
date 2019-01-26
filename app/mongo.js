@@ -45,6 +45,7 @@
                             logger.warn("Failed to connect to the database. ${err.stack}");
                             return reject (err);
                         }
+                        this.mongo_db = db;
                         return resolve(db);
                     }
                 );
@@ -57,8 +58,7 @@
             }
 
             return new Promise((resolve, reject) => {
-                const mongodb = require("./app").mongo_db;
-                const db = mongodb.db(config.mongo_db);
+                const db = this.mongo_db.db(config.mongo_db);
                 assert.notStrictEqual(null, db);
                 const collection = db.collection('posts');
                 assert.notStrictEqual(null, collection);
@@ -85,8 +85,7 @@
 
         static delete(id) {
             return new Promise((resolve, reject) => {
-                const mongodb = require("./app").mongo_db;
-                const db = mongodb.db(config.mongo_db);
+                const db = this.mongo_db.db(config.mongo_db);
                 assert.notStrictEqual(null, db);
                 const collection = db.collection('posts');
                 assert.notStrictEqual(null, collection);

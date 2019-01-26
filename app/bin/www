@@ -29,14 +29,12 @@
     const minRequiredNodejsVersion = [ "v6", "10"];
     const logger = require("../logger").logger;
     const setLogLevel = require ("../logger").setLogLevel;
-    const app = require('../app');
+    const trashmailApp = require('../app').trashmailApp;
     const debug = require('debug')('node-test-01:server');
     const cluster = require('cluster');
     const http = require('http');
-    const childProcess = require("child_process");
     const fs = require("fs");
     const numCPUs = require('os').cpus().length;
-    const Lib = require("../lib").Lib;
     const Config = require("../config").Config;
     const config = Config.getConfig();
     const cacheDir = config.cachedir ? config.cachedir : "cache";
@@ -73,27 +71,7 @@
     };
 
 
-    const uglifyjs = function (src, dest) {
-        const uglify_params = "--compress";
-
-        childProcess.execSync("./node_modules/uglify-es/bin/uglifyjs " + src + " " + uglify_params + " --output " + dest);
-    };
-
-
-    const uglifycss = function (src, dest) {
-        childProcess.execSync("node_modules/uglifycss/uglifycss " + src + " > " + dest);
-    };
-
-
     const initFilesystem = function () {
-        const src_mainjs = "public/javascripts/main.js";
-        const dest_mainjs = Lib.get_minified("mainjs").minified_filepath;
-        uglifyjs(src_mainjs, dest_mainjs);
-
-        const src_styles = "public/stylesheets/style.css";
-        const dest_styles = Lib.get_minified("styles").minified_filepath;
-        uglifycss(src_styles, dest_styles);
-
         try {
             fs.mkdirSync(cacheDir);
         } catch (err) {
@@ -117,10 +95,10 @@
         address = "127.0.0.1";
     }
 
-    app.set('port', port);
+    trashmailApp.set('port', port);
 
     if (cluster.isMaster) {
-        if (app.get('env') === 'development') {
+        if (trashmailApp.get('env') === 'development') {
             setLogLevel("debug");
             logger.log("warn", "Running in development mode");
         } else {
@@ -142,7 +120,7 @@
         // Workers can share any TCP connection
         // In this case it is an HTTP server
 
-        server = http.createServer(app);
+        server = http.createServer(trashmailApp);
 
         server.listen(port, address);
         server.on('error', onError);

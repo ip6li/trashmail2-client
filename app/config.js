@@ -21,18 +21,15 @@
 
 (function () {
     "use strict";
-    
+
     const logger = require("./logger").logger;
     const fs = require('fs');
-    const languages = {};
-    
-    let selectedConfigPath = "";
-    let config = {};
+    const assert = require("assert");
 
 
     class Private {
 
-        static fileLocations () {
+        static fileLocations() {
             const defaults = {};
             defaults.mainjs = {};
             defaults.mainjs.uri = "/javascripts/main.min.js";
@@ -48,7 +45,7 @@
             defaults.jqueryui.file = __dirname + "/node_modules/jquery-ui-dist/jquery-ui.min.js";
             defaults.styles = {};
             defaults.styles.uri = "/stylesheets/style.min.css";
-            defaults.styles.file =  __dirname + "/public/stylesheets/style.min.css";
+            defaults.styles.file = __dirname + "/public/stylesheets/style.min.css";
             defaults.styles_jqueryui = {};
             defaults.styles_jqueryui.uri = "/stylesheets/jquery-ui/jquery-ui.min.css";
             defaults.styles_jqueryui.file = __dirname + "/node_modules/jquery-ui-dist/jquery-ui.min.css";
@@ -62,9 +59,11 @@
             return JSON.parse(configDataString.toString());
         }
 
-        static loadLanguageFiles () {
-            fs.readdir ("views", function(err, list) {
-                list.forEach (function (filename) {
+        static loadLanguageFiles() {
+            const languages = {};
+
+            fs.readdir("views", function (err, list) {
+                list.forEach(function (filename) {
                     let found = filename.toString().match(/index\.(\S+)\.pug/);
                     if (found) {
                         const id = found[1];
@@ -72,6 +71,8 @@
                     }
                 });
             });
+
+            return languages;
         }
 
     }
@@ -79,16 +80,16 @@
 
     class Config {
 
-        static getLocalConfig () {
-            return Config.configFile(config.configRuntime);
+        static getLocalConfig() {
+            return Config.configFile(this.config.configRuntime);
         }
 
-        static getLanguages () {
-            return languages;
+        static getLanguages() {
+            return this.languages;
         }
 
         // Load Config File
-        static configFile (configFileName) {
+        static configFile(configFileName) {
             const configFiles = [
                 "/etc",
                 "/etc/trashmail",
@@ -99,51 +100,49 @@
                 __dirname
             ];
 
-            let fname = "undefined";
-            if (typeof selectedConfigPath !== "undefined") {
+            if (typeof this.selectedConfigPath === "undefined") {
                 for (let i = 0, iLen = configFiles.length; i < iLen; i++) {
+                    const fname = configFiles[i] + "/" + configFileName;
                     try {
-                        fname = configFiles[i] + "/" + configFileName;
                         const testConfig = Private.loadConfigFile(fname);
                         if (typeof testConfig !== "undefined") {
                             logger.log("info", "Succeeded with config file " + fname);
-                            selectedConfigPath = configFiles[i];
+                            this.selectedConfigPath = configFiles[i];
+                            assert.notStrictEqual("undefined", typeof testConfig);
                             return testConfig;
                         }
-                    }
-                    catch (err) {
+                    } catch (err) {
                         logger.log("info", "Tried config file " + fname);
                     }
                 }
             } else {
-                fname = selectedConfigPath + "/" + configFileName;
-                try {
-                    return Private.loadConfigFile(fname);
-                } catch (err) {
-                    logger.log("error", "cannot parse " + fname);
-                }
+                const fname = this.selectedConfigPath + "/" + configFileName;
+                return Private.loadConfigFile(fname);
             }
+
+            throw "No config file found";
         }
 
-        static getConfig () {
-            config = Config.configFile("trashmail.json");
-            config.fileLocations = Private.fileLocations();
+        static getConfig() {
+            this.config = Config.configFile("trashmail.json");
+            assert.notStrictEqual("undefined", typeof this.config);
+            this.config.fileLocations = Private.fileLocations();
 
-            if (typeof config === "undefined") {
+            if (typeof this.config === "undefined") {
                 logger.log("error", "No config file found, giving up!");
                 process.exit(1);
             } else {
-                Private.loadLanguageFiles();
+                this.languages = Private.loadLanguageFiles();
             }
 
-            return config;
+            return this.config;
         }
 
         static getCacheDir() {
-            const config = Config.getConfig();
+            //const config = Config.getConfig();
 
-            if (typeof config.cachedir !== "undefined") {
-                return config.cachedir;
+            if (typeof this.config.cachedir !== "undefined") {
+                return this.config.cachedir;
             } else {
                 return "cache";
             }
