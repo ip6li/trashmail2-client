@@ -22,15 +22,15 @@
 (function () {
     "use strict";
 
-    const logger = require("./logger").logger;
     const fs = require('fs');
     const assert = require("assert");
-
+    const logger = require("./logger").logger;
 
     class Private {
 
         static fileLocations() {
             const defaults = {};
+
             defaults.mainjs = {};
             defaults.mainjs.uri = "/javascripts/main.min.js";
             defaults.mainjs.file = __dirname + "/public/javascripts/main.min.js";
@@ -49,6 +49,17 @@
             defaults.styles_jqueryui = {};
             defaults.styles_jqueryui.uri = "/stylesheets/jquery-ui/jquery-ui.min.css";
             defaults.styles_jqueryui.file = __dirname + "/node_modules/jquery-ui-dist/jquery-ui.min.css";
+
+            if (typeof process.env.LOGLEVEL !== "undefined" && process.env.LOGLEVEL === "debug") {
+                defaults.mainjs.uri = "/javascripts/main.js";
+                defaults.mainjs.file = __dirname + "/public/javascripts/main.js";
+                defaults.base64js.uri = "/javascripts/js-base64/base64.js";
+                defaults.base64js.file = __dirname + "/node_modules/js-base64/base64.js";
+                defaults.jquery.uri = "/javascripts/jquery/jquery.js";
+                defaults.jquery.file = __dirname + '/node_modules/jquery/dist/jquery.js';
+                defaults.jqueryui.uri = "/javascripts/jquery-ui/jquery-ui.js";
+                defaults.jqueryui.file = __dirname + "/node_modules/jquery-ui-dist/jquery-ui.js";
+            }
 
             return defaults;
         }
@@ -99,6 +110,10 @@
                 process.env.HOME,
                 __dirname
             ];
+
+            if (typeof process.env.CONFIGPATH !== "undefined") {
+                configFiles.push(process.env.CONFIGPATH);
+            }
 
             if (typeof this.selectedConfigPath === "undefined") {
                 for (let i = 0, iLen = configFiles.length; i < iLen; i++) {

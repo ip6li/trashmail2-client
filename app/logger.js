@@ -22,10 +22,10 @@
 (function () {
     "use strict";
 
-    const process = require("process");
+    //const process = require("process");
     const winston = require("winston");
     
-    const transport = new winston.transports.Console();
+    //const transport = new winston.transports.Console();
 
     const customFormat = winston.format.combine(
         winston.format.colorize(),

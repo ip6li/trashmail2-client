@@ -272,21 +272,20 @@
                 });
             });
 
-            $("#tmform").submit(function() {
+            const tmform = $("#tmform");
+
+            tmform.submit(function() {
                 return false;
             });
 
-            $(this).keypress(function (event) {
+            tmform.keypress(function (event) {
                 if (event.keyCode === 10 || event.keyCode === 13) {
                     event.preventDefault();
-                }
-            });
-
-            nameInput.keyup(function (event) {
-                if (event.keyCode === 10 || event.keyCode === 13) {
                     submitButton.click();
+                    event.stopPropagation();
+                    submitButton.click();
+                    updateMailAddress();
                 }
-                updateMailAddress();
             });
 
             domainSelect.change(function () {

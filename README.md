@@ -82,12 +82,6 @@ This file must be located in exactly one of following locations:
 
 See project wiki in Github for description
 
-systemd
--------
-
-Use systemd for start/stop server. It is recommended to use a Docker container based on
-official Node image.
-
 Docker
 ------
 
@@ -148,6 +142,7 @@ Environment
 
 NODE_ENV [production|development]
 LOGLEVEL see Winston documentation for available log levels
+CONFIGPATH Custom path where to find config files
 
 Other OS
 ========
