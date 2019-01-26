@@ -24,10 +24,9 @@
 const express = require('express');
 const router = express.Router();
 const fs = require('fs');
-const trashmail = require ('../trashmail');
+const Trashmail = require ("../trashmail").Trashmail;
 const Lib = require ("../lib").Lib;
-
-const footer = "<div id='footer' class='footer'>footer</div>";
+const Config = require ("../config").Config;
 
 
 /* GET home page. */
@@ -42,7 +41,7 @@ router.get('/', function (req, res, next) {
         sess.password = password;
     }
 
-    trashmail.doRequest (trashmail.doGet, sess, req, res, next, password);
+    Trashmail.doRequest (Trashmail.doGet, sess, req, res, next, password);
 });
 
 
@@ -54,10 +53,10 @@ router.post('/', function (req, res, next) {
     if (sess.password) {
         password = sess.password;
     } else {
-        res.send("<span class='error'>" + trashmail.config.text.invalid_request + "</span>");
+        res.send("<span class='error'>" + Config.getConfig().text.invalid_request + "</span>");
     }
 
-    trashmail.doRequest (trashmail.doPost, sess, req, res, next, password);
+    Trashmail.doRequest (Trashmail.doPost, sess, req, res, next, password);
 });
 
 

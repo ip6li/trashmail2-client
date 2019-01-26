@@ -41,146 +41,152 @@
 
     let server = {};
 
+    
+    class Private {
 
-    const checkEnvironment = function () {
-        const v = process.version.toString();
-        const versions = v.split(/\./);
-        if (versions[0] < minRequiredNodejsVersion[0] && versions[1] < minRequiredNodejsVersion[1]) {
-            const msg = v + " is too old";
-            logger.log("error", msg);
-            return new Error(msg);
-        }
-
-        if (process.config.variables.icu_small) {
-            try {
-                require("full-icu");
-                if (config.NODE_ICU_DATA) {
-                    process.env.NODE_ICU_DATA = config.NODE_ICU_DATA;
-                } else {
-                    process.env.NODE_ICU_DATA = "node_modules/full-icu";
-                }
-                logger.log ("info", "using full-icu with NODE_ICU_DATA = " + process.env.NODE_ICU_DATA);
-            } catch (err) {
-                logger.log ("warn", "full-icu not found, using icu small is used, your milage will vary. " +
-                    "Please consider to install full-icu with \"npm install full-icu\"");
-                logger.log ("warn", err);
+        static checkEnvironment () {
+            const v = process.version.toString();
+            const versions = v.split(/\./);
+            if (versions[0] < minRequiredNodejsVersion[0] && versions[1] < minRequiredNodejsVersion[1]) {
+                const msg = v + " is too old";
+                logger.log("error", msg);
+                return new Error(msg);
             }
-        } else {
-            logger.log("info", "system provided icu used, that is good.");
-        }
-    };
 
-
-    const initFilesystem = function () {
-        try {
-            fs.mkdirSync(cacheDir);
-        } catch (err) {
-            logger.log ("debug", "cache dir " + cacheDir + " already exists");
-        }
-    };
-
-
-    checkEnvironment();
-
-    initFilesystem();
-
-
-    /**
-     * Get port from environment and store in Express.
-     */
-
-    const port = normalizePort(process.env.PORT || '3000');
-    let address = process.env.ADDRESS;
-    if (typeof address === "undefined") {
-        address = "127.0.0.1";
-    }
-
-    trashmailApp.set('port', port);
-
-    if (cluster.isMaster) {
-        if (trashmailApp.get('env') === 'development') {
-            setLogLevel("debug");
-            logger.log("warn", "Running in development mode");
-        } else {
-            setLogLevel("info");
-            logger.log("info", "Running in production mode");
+            if (process.config.variables.icu_small) {
+                try {
+                    require("full-icu");
+                    if (config.NODE_ICU_DATA) {
+                        process.env.NODE_ICU_DATA = config.NODE_ICU_DATA;
+                    } else {
+                        process.env.NODE_ICU_DATA = "node_modules/full-icu";
+                    }
+                    logger.log ("info", "using full-icu with NODE_ICU_DATA = " + process.env.NODE_ICU_DATA);
+                } catch (err) {
+                    logger.log ("warn", "full-icu not found, using icu small is used, your milage will vary. " +
+                        "Please consider to install full-icu with \"npm install full-icu\"");
+                    logger.log ("warn", err);
+                }
+            } else {
+                logger.log("info", "system provided icu used, that is good.");
+            }
         }
 
-
-        // Fork workers.
-        for (let i = 0; i < numCPUs; i++) {
-            cluster.fork();
+        static initFilesystem () {
+            try {
+                fs.mkdirSync(cacheDir);
+            } catch (err) {
+                logger.log ("debug", "cache dir " + cacheDir + " already exists");
+            }
         }
 
-        cluster.on('exit', (worker, code, signal) => {
-            logger.log(`worker ${worker.process.pid} died`, code, signal);
-            cluster.fork();
-        });
-    } else {
-        // Workers can share any TCP connection
-        // In this case it is an HTTP server
+        /**
+         * Normalize a port into a number, string, or false.
+         */
 
-        server = http.createServer(trashmailApp);
+        static normalizePort(val) {
+            const port = parseInt(val, 10);
 
-        server.listen(port, address);
-        server.on('error', onError);
-        server.on('listening', onListening);
-    }
+            if (isNaN(port)) {
+                // named pipe
+                return val;
+            }
 
-    /**
-     * Normalize a port into a number, string, or false.
-     */
+            if (port >= 0) {
+                // port number
+                return port;
+            }
 
-    function normalizePort(val) {
-        const port = parseInt(val, 10);
-
-        if (isNaN(port)) {
-            // named pipe
-            return val;
+            return false;
         }
 
-        if (port >= 0) {
-            // port number
-            return port;
-        }
+        /**
+         * Event listener for HTTP server "error" event.
+         */
 
-        return false;
-    }
-
-    /**
-     * Event listener for HTTP server "error" event.
-     */
-
-    function onError(error) {
-        if (error.syscall !== 'listen') {
-            throw error;
-        }
-
-        const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
-
-        // handle specific listen errors with friendly messages
-        switch (error.code) {
-            case 'EACCES':
-                logger.log ("error", bind + ' requires elevated privileges');
-                process.exit(1);
-                break;
-            case 'EADDRINUSE':
-                logger.log ("error", bind + ' is already in use');
-                process.exit(1);
-                break;
-            default:
+        static onError(error) {
+            if (error.syscall !== 'listen') {
                 throw error;
+            }
+
+            const bind = typeof this.port === 'string' ? 'Pipe ' + this.port : 'Port ' + this.port;
+
+            // handle specific listen errors with friendly messages
+            switch (error.code) {
+                case 'EACCES':
+                    logger.log ("error", bind + ' requires elevated privileges');
+                    process.exit(1);
+                    break;
+                case 'EADDRINUSE':
+                    logger.log ("error", bind + ' is already in use');
+                    process.exit(1);
+                    break;
+                default:
+                    throw error;
+            }
         }
+
+        /**
+         * Event listener for HTTP server "listening" event.
+         */
+
+        static onListening() {
+            const addr = server.address();
+            const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+            debug('Listening on ' + bind);
+        }
+
+        static startServer() {
+            Private.checkEnvironment();
+            Private.initFilesystem();
+
+            /**
+             * Get port from environment and store in Express.
+             */
+
+            this.port = Private.normalizePort(process.env.PORT || '3000');
+            let address = process.env.ADDRESS;
+            if (typeof address === "undefined") {
+                address = "127.0.0.1";
+            }
+
+            trashmailApp.set('port', this.port);
+
+            if (cluster.isMaster) {
+                if (trashmailApp.get('env') === 'development') {
+                    setLogLevel("debug");
+                    logger.log("warn", "Running in development mode");
+                } else {
+                    setLogLevel("info");
+                    logger.log("info", "Running in production mode");
+                }
+
+
+                // Fork workers.
+                for (let i = 0; i < numCPUs; i++) {
+                    cluster.fork();
+                }
+
+                cluster.on('exit', (worker, code, signal) => {
+                    logger.log(`worker ${worker.process.pid} died`, code, signal);
+                    cluster.fork();
+                });
+            } else {
+                // Workers can share any TCP connection
+                // In this case it is an HTTP server
+
+                server = http.createServer(trashmailApp);
+
+                server.listen(this.port, address);
+                server.on('error', Private.onError);
+                server.on('listening', Private.onListening);
+            }
+            
+        }
+        
     }
 
-    /**
-     * Event listener for HTTP server "listening" event.
-     */
-
-    function onListening() {
-        const addr = server.address();
-        const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
-        debug('Listening on ' + bind);
-    }
+    
+    Private.startServer();
 
 }());
