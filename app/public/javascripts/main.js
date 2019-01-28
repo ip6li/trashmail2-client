@@ -109,7 +109,7 @@
     }
 
 
-    function requestQrCode(name, domain) {
+    function requestQrCode2(name, domain) {
         if (config.qrcode) {
             $.ajax({
                 method: "POST",
@@ -122,6 +122,17 @@
                     const qr = $("#qrcode");
                     qr.empty().append(img);
                 });
+        }
+    }
+
+    function requestQrCode(name, domain) {
+        if (config.qrcode) {
+            createQrCode(name, domain).then(function(qrcode) {
+                console.log("qrcode: %o", qrcode);
+                const img = "<img src='" + qrcode + "' />";
+                const qr = $("#qrcode");
+                qr.empty().append(img);
+            });
         }
     }
 
@@ -249,6 +260,7 @@
 
 
     $(document).ready(function () {
+        noscript.hide();
         setMailForState(false);
         $.when(requestConfig()).then(function () {
             submitButton.on('click', function () {
@@ -288,6 +300,10 @@
                 }
             });
 
+            nameInput.keyup(function (event) {
+                updateMailAddress();
+            });
+
             domainSelect.change(function () {
                 updateMailAddress();
             });
@@ -316,7 +332,6 @@
                 nameInput.val(urlParams.name);
                 domainSelect.val(urlParams.domain);
                 const rfc822 = nameInput.val() + "@" + domainSelect.val();
-                const msg = "<" + rfc822 + ">";
                 updateDivRcpt(rfc822);
                 requestQrCode(urlParams.name, urlParams.domain);
             }
@@ -330,7 +345,7 @@
             impress.empty().append(config.text.impress);
             dialogDelete.empty().append(config.text.dialogDelete);
 
-            noscript.hide();
+
             main.show();
             setSubmitState(true);
         });

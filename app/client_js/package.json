@@ -1,0 +1,20 @@
+{
+  "name": "trashmail",
+  "version": "1.0.1",
+  "license": "AGPL-3.0",
+  "private": true,
+  "scripts": {
+    "install": "browserify --exclude jquery main2.js > ../public/javascripts/bundle.js && npm run qrcode",
+    "uglify_js": "./node_modules/uglify-es/bin/uglifyjs ../public/javascripts/bundle.js --compress --output ../public/javascripts/bundle.min.js",
+    "qrcode": "browserify qrcode.js > qrcode.bundle.js && ./node_modules/uglify-es/bin/uglifyjs qrcode.bundle.js --compress --output ../public/javascripts/qrcode.min.js"
+  },
+  "dependencies": {
+    "jquery": "~3.3.1",
+    "jquery-ui": "~1.12.1",
+    "qrcode": "~1.3.2"
+  },
+  "devDependencies": {
+    "browserify": "~16.2.3",
+    "uglify-es": "github:mishoo/UglifyJS2#harmony"
+  }
+}

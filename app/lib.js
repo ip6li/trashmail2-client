@@ -71,7 +71,7 @@
         }
 
         static getFiles () {
-            const includes = ["mainjs", "base64js", "jquery", "jqueryui", "styles", "styles_jqueryui"];
+            const includes = ["mainjs", "base64js", "jquery", "jqueryui", "styles", "styles_jqueryui", "qrcode"];
             const scripts = {};
 
             if (files !== null) {

@@ -143,6 +143,7 @@ new lib: https://gitlab.com/nodemailer/mailparser2
             data.base64js = Lib.get_minified_sri("base64js");
             data.jqueryjs = Lib.get_minified_sri("jquery");
             data.jqueryuijs = Lib.get_minified_sri("jqueryui");
+            data.qrcode = Lib.get_minified_sri("qrcode");
             data.styles = Lib.get_minified_sri("styles");
             data.styles_jqueryui = Lib.get_minified_sri("styles_jqueryui");
             data.serverTimeDate = Lib.getServerTimeDate(acceptedLanguages);

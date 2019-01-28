@@ -43,6 +43,9 @@
             defaults.jqueryui = {};
             defaults.jqueryui.uri = "/javascripts/jquery-ui/jquery-ui.min.js";
             defaults.jqueryui.file = __dirname + "/node_modules/jquery-ui-dist/jquery-ui.min.js";
+            defaults.qrcode = {};
+            defaults.qrcode.uri = "/javascripts/qrcode.min.js";
+            defaults.qrcode.file = __dirname + "/public/javascripts/qrcode.min.js";
             defaults.styles = {};
             defaults.styles.uri = "/stylesheets/style.min.css";
             defaults.styles.file = __dirname + "/public/stylesheets/style.min.css";
