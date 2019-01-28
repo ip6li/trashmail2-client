@@ -109,26 +109,9 @@
     }
 
 
-    function requestQrCode2(name, domain) {
-        if (config.qrcode) {
-            $.ajax({
-                method: "POST",
-                url: url,
-                data: {do: "qrcode", name: name, domain: domain}
-            })
-                .done(function (json) {
-                    const b64body = JSON.parse(json);
-                    const img = "<img src='" + b64body.qrcode + "' />";
-                    const qr = $("#qrcode");
-                    qr.empty().append(img);
-                });
-        }
-    }
-
     function requestQrCode(name, domain) {
         if (config.qrcode) {
             createQrCode(name, domain).then(function(qrcode) {
-                console.log("qrcode: %o", qrcode);
                 const img = "<img src='" + qrcode + "' />";
                 const qr = $("#qrcode");
                 qr.empty().append(img);
