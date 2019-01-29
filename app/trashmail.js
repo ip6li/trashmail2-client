@@ -32,7 +32,6 @@ new lib: https://gitlab.com/nodemailer/mailparser2
     const Lib = require("./lib").Lib;
     const Config = require("./config").Config;
     const config = Config.getConfig();
-    const Qrcode = require("./qrcode").Qrcode;
     const validation = require("./validation");
     const Base64 = require('js-base64').Base64;
     const uidRegex = "^[a-zA-Z0-9_]{2,128}$";
@@ -90,29 +89,6 @@ new lib: https://gitlab.com/nodemailer/mailparser2
                     res.send({err: "unknown request"});
                 }
             }
-        }
-
-        static doQrCode(data, res) {
-            let qr = "undefined";
-
-            Qrcode.requestQrCode(data.name, data.domain).then((qrcode) => {
-                qr = JSON.stringify(qrcode);
-
-                if ((typeof qr !== "undefined") && validation.validateName(data.name) && validation.validateDomain(data.domain)) {
-                    if (!res.finished) {
-                        res.send(qr);
-                    } else if (data.do === "config") {
-                        if (!res.finished) {
-                            res.send(JSON.stringify(config.client));
-                        }
-                    }
-                } else {
-                    logger.log("error", "doQrCode: Bad parameters");
-                    if (!res.finished) {
-                        res.send({err: "unknown request"});
-                    }
-                }
-            });
         }
 
         static findLanguage (acceptedLangs) {
@@ -173,7 +149,7 @@ new lib: https://gitlab.com/nodemailer/mailparser2
                 });
             } else {
                 if (!res.finished) {
-                    res.send("<span class='error'>" + config.text.invalid_request + "</span>");
+                    res.send(Base64.encode("<span class='error'>" + config.text.invalid_request + "</span>"));
                 }
             }
         }
@@ -263,8 +239,6 @@ new lib: https://gitlab.com/nodemailer/mailparser2
                 Private.doGetMail(data, res, password, acceptedLanguages);
             } else if (data.do === "delete") {
                 Private.doDelete(req, res, password);
-            } else if (data.do === "qrcode") {
-                Private.doQrCode(data, res);
             } else if (data.do === "config") {
                 if (!res.finished) {
                     res.send(JSON.stringify(config.client));
