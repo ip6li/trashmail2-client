@@ -32,6 +32,8 @@
     const nameRegex = "^[a-zA-Z0-9._+-]{3,64}$";
     const undef = "undefined";
 
+    const fields = {};
+    
     let config = undef;
 
     $.fn.collect = function (fn) {
@@ -205,55 +207,59 @@
         });
     }
 
-
-    const submitButton = $("#submit");
-    const impressumButton = $("#b_impressum");
-    const nameInput = $("#name");
-    const domainSelect = $("#domain");
-    const mailAddress = $("#mailaddress");
-    const impress = $("#impressum");
-    const dialogDelete = $("#dialogDelete");
-    const noscript = $("#noscript");
-    const main = $("#main");
+    
+    const setFields = function () {
+        fields.submitButton = $("#submit");
+        fields.impressumButton = $("#b_impressum");
+        fields.nameInput = $("#name");
+        fields.domainSelect = $("#domain");
+        fields.mailAddress = $("#mailaddress");
+        fields.impress = $("#impressum");
+        fields.dialogDelete = $("#dialogDelete");
+        fields.noscript = $("#noscript");
+        fields.main = $("#main");
+    };
+    
 
     if (name) {
-        nameInput.val(name);
+        fields.nameInput.val(name);
     }
 
     if (domain) {
-        domainSelect.val(domain);
+        fields.domainSelect.val(domain);
     }
 
 
     function updateMailAddress() {
-        const name = nameInput.val();
-        const domain = domainSelect.val();
+        const name = fields.nameInput.val();
+        const domain = fields.domainSelect.val();
 
         if (typeof name !== undef && domain !== undef && name !== "" && domain !== "") {
             if (validateName(name) && validateDomain(domain)) {
                 const emailAddress = name + "@" + domain;
-                mailAddress.empty().append(emailAddress);
+                fields.mailAddress.empty().append(emailAddress);
                 requestQrCode(name, domain);
             }
         } else {
-            mailAddress.empty();
+            fields.mailAddress.empty();
             $("#qrcode").empty();
         }
     }
 
 
     $(document).ready(function () {
-        noscript.hide();
+        setFields();
+        fields.noscript.hide();
         setMailForState(false);
         $.when(requestConfig()).then(function () {
-            submitButton.on('click', function () {
+            fields.submitButton.on('click', function () {
                 const data = {};
-                data.name = nameInput.val();
-                data.domain = domainSelect.val();
+                data.name = fields.nameInput.val();
+                data.domain = fields.domainSelect.val();
                 submitButtonPressed(data);
             });
 
-            impressumButton.on('click', function () {
+            fields.impressumButton.on('click', function () {
                 $("#impressum").dialog({
                     dialogClass: "no-close",
                     buttons: [
@@ -276,18 +282,18 @@
             tmform.keypress(function (event) {
                 if (event.keyCode === 10 || event.keyCode === 13) {
                     event.preventDefault();
-                    submitButton.click();
+                    fields.submitButton.click();
                     event.stopPropagation();
-                    submitButton.click();
+                    fields.submitButton.click();
                     updateMailAddress();
                 }
             });
-
-            nameInput.keyup(function (event) {
+            
+            fields.nameInput.keyup(function (event) {
                 updateMailAddress();
             });
 
-            domainSelect.change(function () {
+            fields.domainSelect.change(function () {
                 updateMailAddress();
             });
 
@@ -312,24 +318,24 @@
 
             if (typeof urlParams.domain !== "undefined" && typeof urlParams.name !== "undefined" &&
                 validateName(urlParams.name) && validateDomain(urlParams.domain)) {
-                nameInput.val(urlParams.name);
-                domainSelect.val(urlParams.domain);
-                const rfc822 = nameInput.val() + "@" + domainSelect.val();
+                fields.nameInput.val(urlParams.name);
+                fields.domainSelect.val(urlParams.domain);
+                const rfc822 = fields.nameInput.val() + "@" + fields.domainSelect.val();
                 updateDivRcpt(rfc822);
                 requestQrCode(urlParams.name, urlParams.domain);
             }
 
-            const name = nameInput.val();
-            const domain = domainSelect.val();
+            const name = fields.nameInput.val();
+            const domain = fields.domainSelect.val();
             if (typeof name !== undef && typeof domain !== undef && name !== "" && domain !== "") {
-                mailAddress.empty().append(nameInput.val() + "@" + domainSelect.val());
+                fields.mailAddress.empty().append(fields.nameInput.val() + "@" + fields.domainSelect.val());
             }
 
-            impress.empty().append(config.text.impress);
-            dialogDelete.empty().append(config.text.dialogDelete);
+            fields.impress.empty().append(config.text.impress);
+            fields.dialogDelete.empty().append(config.text.dialogDelete);
 
 
-            main.show();
+            fields.main.show();
             setSubmitState(true);
         });
     });
