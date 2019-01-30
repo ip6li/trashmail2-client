@@ -4,10 +4,10 @@
   "license": "AGPL-3.0",
   "private": true,
   "scripts": {
-    "install": "browserify --exclude jquery main2.js > ../public/javascripts/bundle.js && npm run qrcode && npm run validator",
+    "install": "node ./node_modules/browserify/bin/cmd.js --exclude jquery main2.js > ../public/javascripts/bundle.js && npm run qrcode && npm run validator",
     "uglify_js": "./node_modules/uglify-es/bin/uglifyjs ../public/javascripts/bundle.js --compress --output ../public/javascripts/bundle.min.js",
-    "qrcode": "browserify qrcode.js > qrcode.bundle.js && ./node_modules/uglify-es/bin/uglifyjs qrcode.bundle.js --compress --output ../public/javascripts/qrcode.min.js",
-    "validator": "browserify validator.js > validator.bundle.js && ./node_modules/uglify-es/bin/uglifyjs validator.bundle.js --compress --output ../public/javascripts/validator.min.js"
+    "qrcode": "node ./node_modules/browserify/bin/cmd.js qrcode.js > qrcode.bundle.js && ./node_modules/uglify-es/bin/uglifyjs qrcode.bundle.js --compress --output ../public/javascripts/qrcode.min.js",
+    "validator": "node ./node_modules/browserify/bin/cmd.js validator.js > validator.bundle.js && ./node_modules/uglify-es/bin/uglifyjs validator.bundle.js --compress --output ../public/javascripts/validator.min.js"
   },
   "dependencies": {
     "jquery": "~3.3.1",
