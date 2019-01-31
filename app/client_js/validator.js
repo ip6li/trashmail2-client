@@ -30,5 +30,6 @@
 
 
     module.exports.validateEmail = validateEmail;
+    window.validateEmail = validateEmail;
 
 }());

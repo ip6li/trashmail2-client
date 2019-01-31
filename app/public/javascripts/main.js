@@ -78,6 +78,8 @@
     }
 
 
+
+
     function setDeleteIcons() {
         const links = $('#mails').find('img').collect('id');
         links.forEach(function (id) {
@@ -113,10 +115,9 @@
 
     function requestQrCode(name, domain) {
         if (config.qrcode) {
-            createQrCode(name, domain).then(function(qrcode) {
-                const img = "<img src='" + qrcode + "' />";
-                const qr = $("#qrcode");
-                qr.empty().append(img);
+            window.createQrCode(name, domain).then(function(qrcode) {
+                const img = "<img src='" + qrcode + "' alt='qrCode'/>";
+                fields.qrcode.empty().append(img);
             });
         }
     }
@@ -186,7 +187,7 @@
 
 
     function displayDialog(encryptedUid) {
-        $("#dialogDelete").dialog({
+        fields.dialogDelete.dialog({
             dialogClass: "no-close",
             buttons: [
                 {
@@ -209,6 +210,7 @@
 
     
     const setFields = function () {
+        fields.tmform = $("#tmform");
         fields.submitButton = $("#submit");
         fields.impressumButton = $("#b_impressum");
         fields.nameInput = $("#name");
@@ -218,6 +220,7 @@
         fields.dialogDelete = $("#dialogDelete");
         fields.noscript = $("#noscript");
         fields.main = $("#main");
+        fields.qrcode = $("#qrcode");
     };
     
 
@@ -242,7 +245,7 @@
             }
         } else {
             fields.mailAddress.empty();
-            $("#qrcode").empty();
+            fields.qrcode.empty();
         }
     }
 
@@ -260,7 +263,7 @@
             });
 
             fields.impressumButton.on('click', function () {
-                $("#impressum").dialog({
+                fields.impress.dialog({
                     dialogClass: "no-close",
                     buttons: [
                         {
@@ -273,24 +276,33 @@
                 });
             });
 
-            const tmform = $("#tmform");
-
-            tmform.submit(function() {
+            fields.tmform.submit(function() {
                 return false;
             });
 
-            tmform.keypress(function (event) {
+            fields.tmform.keypress(function (event) {
                 if (event.keyCode === 10 || event.keyCode === 13) {
                     event.preventDefault();
                     fields.submitButton.click();
                     event.stopPropagation();
                     fields.submitButton.click();
                     updateMailAddress();
+                    return event;
                 }
             });
-            
+
             fields.nameInput.keyup(function (event) {
-                updateMailAddress();
+                if (fields.nameInput.val().length<3) {
+                    fields.mailAddress.empty();
+                    return event;
+                }
+                if (fields.nameInput.val().match(nameRegex)) {
+                    updateMailAddress();
+                    return event;
+                } else {
+                    fields.nameInput.val(fields.nameInput.val().replace(/[^a-zA-Z0-9._+-]/g,""));
+                    return false;
+                }
             });
 
             fields.domainSelect.change(function () {
@@ -298,7 +310,7 @@
             });
 
             let urlParams = {};
-            window.onpopstate = function () {
+            window.onpopstate = function (event) {
                 const pl = /\+/g;  // Regex for replacing addition symbol with a space
                 const search = /([^&=]+)=?([^&]*)/g;
                 const decode = function (s) {
@@ -314,6 +326,7 @@
                     }
                 } while (match !== null);
                 updateMailAddress();
+                return event;
             }();
 
             if (typeof urlParams.domain !== "undefined" && typeof urlParams.name !== "undefined" &&

@@ -4,7 +4,7 @@
   "license": "AGPL-3.0",
   "private": true,
   "scripts": {
-    "postinstall": "node ./node_modules/browserify/bin/cmd.js --exclude jquery main2.js > ../public/javascripts/bundle.js && npm run qrcode && npm run validator",
+    "postinstall": "npm run qrcode && npm run validator",
     "uglify_js": "./node_modules/uglify-es/bin/uglifyjs ../public/javascripts/bundle.js --compress --output ../public/javascripts/bundle.min.js",
     "qrcode": "node ./node_modules/browserify/bin/cmd.js qrcode.js > qrcode.bundle.js && ./node_modules/uglify-es/bin/uglifyjs qrcode.bundle.js --compress --output ../public/javascripts/qrcode.min.js",
     "validator": "node ./node_modules/browserify/bin/cmd.js validator.js > validator.bundle.js && ./node_modules/uglify-es/bin/uglifyjs validator.bundle.js --compress --output ../public/javascripts/validator.min.js"
@@ -13,9 +13,7 @@
     "jquery": "~3.3.1",
     "jquery-ui": "~1.12.1",
     "qrcode": "~1.3.2",
-    "validator": "~10.11.0"
-  },
-  "devDependencies": {
+    "validator": "~10.11.0",
     "browserify": "~16.2.3",
     "uglify-es": "github:mishoo/UglifyJS2#harmony"
   }
