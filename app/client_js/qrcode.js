@@ -17,37 +17,28 @@
 
 /* jshint node: true */
 /*jshint esversion: 6 */
-/*global require, module,  __dirname */
-
+/*jshint bitwise: false*/
+/*global require, module, intl,  __dirname, Intl */
 
 (function () {
     "use strict";
 
     const QRCode = require('qrcode');
-    const Config = require("./config").Config;
-    const logger = require("./logger").logger;
-    const validation = require("./validation");
 
 
-    class Qrcode {
-
-        static requestQrCode(name, domain) {
-            let qrurl = Config.getConfig().baseurl;
-            if (validation.validateName(name) && validation.validateDomain(domain)) {
-                qrurl += "/?name=" + name + "&domain=" + domain;
-            }
-            const qrOptions = { 
-                errorCorrectionLevel: 'H'
-            };
-            return QRCode.toDataURL(qrurl, qrOptions).then((qrcode)=> {
-                    return {qrcode: qrcode};
-            }).catch((err)=>{
-                logger.log("error", "Cannot create QR code: " + err.message);
-                return {qrcode: ""};
-            });
-        }
+    function createQrCode(name, domain, qrurl = ".") {
+        qrurl += "/?name=" + name + "&domain=" + domain;
+        const qrOptions = {
+            errorCorrectionLevel: 'H'
+        };
+        return QRCode.toDataURL(qrurl, qrOptions).then((qrcode) => {
+            return qrcode;
+        }).catch(() => {
+            return "";
+        });
     }
 
-    module.exports.Qrcode = Qrcode;
+
+    window.createQrCode = createQrCode;
 
 }());
