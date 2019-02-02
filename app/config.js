@@ -28,6 +28,15 @@
 
     class Private {
 
+        static getConstants(c) {
+            if (typeof c.client.domainRegex === "undefined") {
+                c.client.domainRegex = "^([a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.){1,2}[a-zA-Z]{2,}$";
+            }
+            if (typeof c.client.nameRegex === "undefined") {
+                c.client.nameRegex = "^[a-zA-Z0-9._+-]{3,64}$";
+            }
+        }
+
         static fileLocations() {
             const defaults = {};
 
@@ -156,12 +165,12 @@
                 this.languages = Private.loadLanguageFiles();
             }
 
+            Private.getConstants(this.config);
+
             return this.config;
         }
 
         static getCacheDir() {
-            //const config = Config.getConfig();
-
             if (typeof this.config.cachedir !== "undefined") {
                 return this.config.cachedir;
             } else {

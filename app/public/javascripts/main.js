@@ -28,11 +28,10 @@
     let domain = null;
 
     const url = $(location).attr('href');
-    const domainRegex = "^([a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.){1,2}[a-zA-Z]{2,}$";
-    const nameRegex = "^[a-zA-Z0-9._+-]{3,64}$";
     const undef = "undefined";
 
     const fields = {};
+    const strings = {};
     
     let config = undef;
 
@@ -64,7 +63,7 @@
         if (domain.length > 64) {
             return false;
         }
-        const re = new RegExp(domainRegex);
+        const re = new RegExp(config.domainRegex);
         return domain.match(re);
     }
 
@@ -73,7 +72,7 @@
         if (name.length > 64 || name.length < 3) {
             return false;
         }
-        const re = new RegExp(nameRegex);
+        const re = new RegExp(config.nameRegex);
         return name.match(re);
     }
 
@@ -166,20 +165,22 @@
             url: url,
             data: data
         })
-            .done(function (mails) {
-                const divMails = $("#mails");
-                divMails.empty();
+            .done(function (b64mails) {
+                fields.divMails.empty();
 
                 if (validateName(data.name) && validateDomain(data.domain)) {
                     updateDivRcpt(data.name + "@" + data.domain);
                 }
 
-                if (mails.length > 0) {
-                    divMails.append(Base64.decode(mails));
+                const arr_mails = JSON.parse(Base64.decode(b64mails));
+                if (arr_mails.length > 0) {
+                    arr_mails.forEach(function(item) {
+                        fields.divMails.append(item);
+                    });
                     setDeleteIcons();
                 } else {
                     //noinspection JSUnresolvedVariable
-                    divMails.append("<span class='nomails'>" + config.text.nomails + "</span>");
+                    fields.divMails.append("<span class='nomails'>" + strings.nomails + "</span>");
                 }
                 setSubmitState(true);
             });
@@ -192,14 +193,14 @@
             buttons: [
                 {
                     id: "delete",
-                    text: "Löschen",
+                    text: strings.delete,
                     click: function () {
                         requestDelete(encryptedUid);
                         $(this).dialog("close");
                     }
                 },
                 {
-                    text: "Abbruch",
+                    text: strings.abort,
                     click: function () {
                         $(this).dialog("close");
                     }
@@ -221,12 +222,23 @@
         fields.noscript = $("#noscript");
         fields.main = $("#main");
         fields.qrcode = $("#qrcode");
+        fields.divMails = $("#mails");
     };
-    
+
+
+    const loadStrings = function() {
+        const jq_strings = $("#strings").children();
+        jq_strings.each(function(i, o) {
+            const key = $(o).attr('id').replace("str_", "");
+            strings[key] = $(o).val();
+        });
+    };
+
 
     if (name) {
         fields.nameInput.val(name);
     }
+
 
     if (domain) {
         fields.domainSelect.val(domain);
@@ -252,6 +264,7 @@
 
     $(document).ready(function () {
         setFields();
+        loadStrings();
         fields.noscript.hide();
         setMailForState(false);
         $.when(requestConfig()).then(function () {
@@ -296,7 +309,7 @@
                     fields.mailAddress.empty();
                     return event;
                 }
-                if (fields.nameInput.val().match(nameRegex)) {
+                if (fields.nameInput.val().match(config.nameRegex)) {
                     updateMailAddress();
                     return event;
                 } else {
@@ -345,8 +358,7 @@
             }
 
             fields.impress.empty().append(config.text.impress);
-            fields.dialogDelete.empty().append(config.text.dialogDelete);
-
+            fields.dialogDelete.empty().append(strings.ackdel);
 
             fields.main.show();
             setSubmitState(true);

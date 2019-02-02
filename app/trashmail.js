@@ -39,8 +39,6 @@ new lib: https://gitlab.com/nodemailer/mailparser2
 
     const MessageHandler = require ("./messageHandler").MessageHandler;
     
-    const title = config.title;
-
     let validDomains = [];
     let localConfig = {};
 
@@ -54,7 +52,7 @@ new lib: https://gitlab.com/nodemailer/mailparser2
         static goAway(req, res, ip) {
             logger.log ("debug", "goAway: " + inspect (req, false, 22));
             res.render("blacklisted", {
-                title: title,
+                title: config.title,
                 ip: ip
             }, function (err, html) {
                 logger.log("info", "Blacklisted IP: " + ip.toString());
@@ -113,7 +111,7 @@ new lib: https://gitlab.com/nodemailer/mailparser2
             const foundLanguage = Private.findLanguage(acceptedLanguages);
             logger.log ("debug", "render_index: " + inspect(foundLanguage, false, 22));
 
-            data.title = title;
+            data.title = config.title;
             data.validDomains = localConfig.domains;
             data.mainjs = Lib.get_minified_sri("mainjs");
             data.base64js = Lib.get_minified_sri("base64js");
@@ -137,7 +135,7 @@ new lib: https://gitlab.com/nodemailer/mailparser2
 
                 MessageHandler.loadMessages(realRcpt, foundLanguage).then((htmlMails)=>{
                     if (!res.finished) {
-                        res.write(Base64.encode(htmlMails));
+                        res.write(Base64.encode(JSON.stringify(htmlMails)));
                         res.end();
                     }
                 }).then(()=> {
