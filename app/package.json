@@ -16,6 +16,7 @@
     "body-parser": "~1.18.3",
     "compression": "~1.7.3",
     "cookie-parser": "~1.4.3",
+    "csurf": "~1.9.0",
     "debug": "~2.6.3",
     "dnsbl-lookup": "~0.3.3",
     "express": "~4.16.4",

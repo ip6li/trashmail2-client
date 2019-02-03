@@ -27,6 +27,8 @@
 
     const util = require("util");
     const assert = require("assert");
+    const cookieParser = require('cookie-parser');
+    const bodyParser = require('body-parser');
     const express = require("express");
     const path = require("path");
     const favicon = require("serve-favicon");
@@ -34,8 +36,7 @@
     const setLogLevel = require("./logger").setLogLevel;
     const morgan = require("morgan");
     const session = require("express-session");
-
-    const bodyParser = require("body-parser");
+    
     const minify = require("express-minify");
     const compression = require("compression");
     const routes = require("./routes");
@@ -44,9 +45,10 @@
     const Config = require("./config").Config;
     const config = Config.getConfig();
     const headers = config.headers;
-
-    const app = express();
     
+    const app = express();
+
+
     
     class Private {
 
@@ -205,6 +207,8 @@
         }
     
         static setupApp() {
+            app.use(cookieParser());
+            
             Private.setupSessionHandler();
 
             // view engine setup
@@ -231,7 +235,7 @@
             Private.setupCompression();
 
             app.disable('x-powered-by');
-
+            
             app.use("/", routes);
 
             Private.setupErrorHandler();

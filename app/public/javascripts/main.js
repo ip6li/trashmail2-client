@@ -32,6 +32,8 @@
 
     const fields = {};
     const strings = {};
+
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     
     let config = undef;
 
@@ -101,6 +103,9 @@
         $.ajax({
             method: "POST",
             url: url,
+            headers: {
+                'CSRF-Token': token // <-- is the csrf token as a header
+            },
             data: {do: "delete", delete: what}
         })
             .done(function (json) {
@@ -124,9 +129,13 @@
 
     function requestConfig() {
         const dfd = $.Deferred();
+        console.log("token: %o",token);
         $.ajax({
             method: "POST",
             url: url,
+            headers: {
+                'CSRF-Token': token // <-- is the csrf token as a header
+            },
             data: {do: "config"}
         })
             .done(function (json) {

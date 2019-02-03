@@ -21,6 +21,10 @@
 
 "use strict";
 
+const csrf = require('csurf');
+const bodyParser = require('body-parser');
+const csrfProtection = csrf({ cookie: true });
+const parseForm = bodyParser.urlencoded({ extended: false });
 const express = require('express');
 const router = express.Router();
 const fs = require('fs');
@@ -30,7 +34,7 @@ const Lib = require ("../lib").Lib;
 
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('/', csrfProtection, function (req, res, next) {
     const sess = req.session;
     let password = null;
 
@@ -48,7 +52,7 @@ router.get('/', function (req, res, next) {
 
 
 /* POST home page. */
-router.post('/', function (req, res, next) {
+router.post('/', csrfProtection, function (req, res, next) {
     const sess = req.session;
     //let password = null;
 
