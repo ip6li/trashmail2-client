@@ -22,4 +22,4 @@ test/test-libs
 test/geckodriver.log
 test/screen.*.png
 test/package-lock.json
-
+logs/trashmail.log
