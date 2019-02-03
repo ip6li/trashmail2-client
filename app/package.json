@@ -8,7 +8,9 @@
     "start": "bin/www",
     "uglify_js": "./node_modules/uglify-es/bin/uglifyjs public/javascripts/main.js --compress --output public/javascripts/main.min.js",
     "uglify_css": "./node_modules/uglifycss/uglifycss public/stylesheets/style.css --output public/stylesheets/style.min.css",
-    "postinstall": "cd client_js && npm install && cd .. && npm run uglify_css"
+    "postinstall": "npm run setup",
+    "setup": "cd client_js && npm install && cd .. && npm run uglify_css && npm run uglify_js",
+    "clean": "rm -f public/javascripts/*.min.js; rm -f public/stylesheets/*.min.css"
   },
   "dependencies": {
     "body-parser": "~1.18.3",
@@ -27,6 +29,7 @@
     "mailparser": "~2.4.3",
     "md5": "~2.2.1",
     "mongodb": "~3.1.10",
+    "connect-mongodb-session": "~2.0.7",
     "morgan": "~1.9.1",
     "pug": "~2.0.3",
     "secure-filters": "^1.0.5",

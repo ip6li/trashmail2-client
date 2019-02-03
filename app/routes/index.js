@@ -25,8 +25,8 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const Trashmail = require ("../trashmail").Trashmail;
+const logger = require ("../logger").logger;
 const Lib = require ("../lib").Lib;
-const Config = require ("../config").Config;
 
 
 /* GET home page. */
@@ -35,8 +35,10 @@ router.get('/', function (req, res, next) {
     let password = null;
 
     if (sess.password) {
-        password = req.session.password;
+        logger.log("debug", "router.get: Password provided, so we use it");
+        password = sess.password;
     } else {
+        logger.log("debug", "router.get: No password set, so we generate a new one");
         password = Lib.getPassword();
         sess.password = password;
     }
@@ -48,15 +50,18 @@ router.get('/', function (req, res, next) {
 /* POST home page. */
 router.post('/', function (req, res, next) {
     const sess = req.session;
-    let password = null;
+    //let password = null;
 
     if (sess.password) {
-        password = sess.password;
+        logger.log("debug", "router.post: Password provided, so we use it");
+        const password = sess.password;
+        Trashmail.doRequest (Trashmail.doPost, sess, req, res, next, password);
     } else {
-        res.send("<span class='error'>" + Config.getConfig().text.invalid_request + "</span>");
+        logger.log("error", "router.post: No password set, that is really bad");
+        res.send(JSON.stringify(Lib.getInvalidRequest("Invalid Request")));
     }
 
-    Trashmail.doRequest (Trashmail.doPost, sess, req, res, next, password);
+
 });
 
 

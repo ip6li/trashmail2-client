@@ -67,22 +67,22 @@ new lib: https://gitlab.com/nodemailer/mailparser2
             const uidEncrypted = req.body.delete.replace(Lib.getDeletePrefix(),'');
             if (uidEncrypted instanceof Error) {
                 // handle the error safely
-                logger.log("warn", "uidEncrypted is invalid");
+                logger.log("warn", "doDelete: uidEncrypted is invalid");
             } else if (uidEncrypted.match(uidRe)) {
                 const uid = [];
                 uid.encrypted = uidEncrypted;
                 uid.password = password;
                 MessageHandler.deleteMessage(uid).then((result)=> {
-                    logger.log("debug", "delete message uid: ", uid.encrypted);
+                    logger.log("debug", "doDelete: delete message uid: " + result);
                     if (!res.finished) {
                         res.write(result);
                         res.end();
                     }
                 }).catch((err) => {
-                    logger.log ("warn", "deleteMessage fucked up: " + err);
+                    logger.log ("warn", "doDelete: deleteMessage fucked up: " + err);
                 });
             } else {
-                logger.log("error", "uidEncrypted.match(uidRe) does not match");
+                logger.log("error", "doDelete: uidEncrypted.match(uidRe) does not match");
                 if (!res.finished) {
                     res.send({err: "unknown request"});
                 }
@@ -183,12 +183,9 @@ new lib: https://gitlab.com/nodemailer/mailparser2
                     .catch((err) => {
                         logger.log ("debug", "doRequest error: " + inspect(err, false, 22));
                         Private.goAway(req, res, ip);
-                        if (!res.isfinished) {
-                            res.send("Go away");
-                        }
                     });
             } else {
-                logger.log("debug", "already checked");
+                logger.log("debug", "doRequest: RBL already checked");
                 handler(req, res, next, password);
             }
         }
@@ -244,7 +241,7 @@ new lib: https://gitlab.com/nodemailer/mailparser2
                 }
             } else {
                 if (!res.finished) {
-                    res.write(JSON.stringify({err: "unknown request"}));
+                    res.write(JSON.stringify(Lib.getInvalidRequest("Unknown Request")));
                     res.end();
                 } else {
                     logger.log("error", "disconnected while doPost");

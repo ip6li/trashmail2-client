@@ -22,6 +22,7 @@
 (function () {
     "use strict";
 
+    const storeType = "file"; // file or mongo
     const type_number = "number";
 
     const util = require("util");
@@ -32,9 +33,8 @@
     const logger = require("./logger").logger;
     const setLogLevel = require("./logger").setLogLevel;
     const morgan = require("morgan");
-    const cookieParser = require("cookie-parser");
     const session = require("express-session");
-    const FileStore = require("session-file-store")(session);
+
     const bodyParser = require("body-parser");
     const minify = require("express-minify");
     const compression = require("compression");
@@ -51,18 +51,18 @@
     class Private {
 
         static getCookieConfig() {
-            let cookie_secure = true;
+            const cookie_config = {};
+
             if (app.get("env") === "development") {
-                cookie_secure = false;
+                cookie_config.secure = false;
             }
 
-            try {
-                cookie_secure = config.cookie.secure;
-            } catch (e) {
-                // do nothing
+            if (typeof config.cookie !== "undefined") {
+                cookie_config.secure = typeof config.cookie.secure === "undefined" ? true : config.cookie.secure.match(/true/i)!==null;
+                cookie_config.httpOnly = typeof config.cookie.httpOnly === "undefined" ? true : config.cookie.httpOnly.match(/true/i)!==null;
             }
 
-            return cookie_secure;
+            return cookie_config;
         }
 
         static getCacheTime() {
@@ -157,12 +157,30 @@
         }
     
         static setupSessionHandler() {
-            app.use(cookieParser());
+            let store = null;
+
+            switch (storeType) {
+                case "mongo":
+                    const MongoDBStore = require('connect-mongodb-session')(session);
+                    store = new MongoDBStore({
+                        uri: config.mongo_url + "sessions",
+                        collection: 'tmSessions'
+                    });
+                    store.on('error', function (error) {
+                        logger.log("error", error);
+                    });
+                    break;
+                case "file":
+                    const FileStore = require("session-file-store")(session);
+                    store = new FileStore();
+                    break;
+                default:
+                    throw "Fatal: No session store type set";
+            }
+
             app.use(session({
-                    store: new FileStore(),
-                    cookie: {
-                        secure: Private.getCookieConfig()
-                    },
+                    store: store,
+                    cookie: Private.getCookieConfig(),
                     secret: config.sessionSecret,
                     saveUninitialized: true,
                     maxAge: 3600000,
@@ -204,6 +222,8 @@
 
             Private.setupClientLibs();
             Private.setupCompression();
+
+            app.disable('x-powered-by');
 
             app.use("/", routes);
 

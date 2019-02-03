@@ -65,7 +65,7 @@
             defaults.styles_jqueryui.uri = "/stylesheets/jquery-ui/jquery-ui.min.css";
             defaults.styles_jqueryui.file = __dirname + "/node_modules/jquery-ui-dist/jquery-ui.min.css";
 
-            if (typeof process.env.LOGLEVEL !== "undefined" && process.env.LOGLEVEL === "debug") {
+            if (typeof process.env.DEBUG_CLIENT !== "undefined") {
                 defaults.mainjs.uri = "/javascripts/main.js";
                 defaults.mainjs.file = __dirname + "/public/javascripts/main.js";
                 defaults.base64js.uri = "/javascripts/js-base64/base64.js";

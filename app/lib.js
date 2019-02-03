@@ -57,7 +57,13 @@
         static get_sri (path) {
             const res = {};
             res.hash_algo = "sha384";
-            res.hash = Private.sri_digest(res.hash_algo, fs.readFileSync(path));
+            try {
+                logger.log("debug", "building hashes for " + path);
+                res.hash = Private.sri_digest(res.hash_algo, fs.readFileSync(path));
+            } catch (e) {
+                logger.log("error", "cannot open file " + path + " for read");
+                throw "Fatal";
+            }
             res.crossorigin = "anonymous";
             return res;
         }
@@ -219,6 +225,10 @@
             }
 
             return val;
+        }
+
+        static getInvalidRequest(msg) {
+            return [ { error: msg} ];
         }
 
     }
