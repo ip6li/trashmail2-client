@@ -133,29 +133,24 @@
 
         static localizeDate (dateString, remoteLocale) {
             const date = new Date (dateString.toString());
-            const locale = remoteLocale ? remoteLocale[0] : "en-US";
+            const defaultLocale = [];
+            defaultLocale[0] = typeof config.defaultLocale !== "undefined" ? config.defaultLocale : "en-US";
+            if (typeof remoteLocale === "undefined") {
+                remoteLocale = defaultLocale;
+            }
+
+            if (remoteLocale[0] === "*") {
+                remoteLocale[0] = "en-US";
+            }
 
             try {
-                let res = "";
-                let count=0;
-                do {
-                    //noinspection JSUnresolvedFunction
-                    res = new Intl.DateTimeFormat(locale, dateTimeOptions).format (date) + " (" + date.toString().match(/\(([A-Za-z\s].*)\)/)[1] + ")";
-                } while ((typeof res === "undefined") && (count<remoteLocale.length()));
-                return res;
-            } catch (err) {
                 //noinspection JSUnresolvedFunction
+                return new Intl.DateTimeFormat(remoteLocale, dateTimeOptions).format (date) + " (" + date.toString().match(/\(([A-Za-z\s].*)\)/)[1] + ")";
+            } catch (err) {
                 logger.log ("warn", "localizeDate (Error): " + err + ", in: " + inspect(date));
-                return dateString;
+                //noinspection JSUnresolvedFunction
+                return new Intl.DateTimeFormat(defaultLocale, dateTimeOptions).format (date) + " (" + date.toString().match(/\(([A-Za-z\s].*)\)/)[1] + ")";
             }
-        }
-
-        static get_minified (what) {
-            const scripts = Private.getFiles();
-            const f = {};
-            f.minified_urlpath = scripts[what].minified_urlpath;
-            f.minified_filepath = scripts[what].minified_filepath;
-            return f;
         }
 
         static get_minified_sri (what) {

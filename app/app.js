@@ -50,6 +50,13 @@
     
     class Private {
 
+        static getBool(o) {
+            if (typeof o === "undefined") { return false; }
+            if (typeof o === "boolean") { return o; }
+            if (typeof o === "string") { return o.match(/true/i)!==null; }
+            return false;
+        }
+
         static getCookieConfig() {
             const cookie_config = {};
 
@@ -58,8 +65,8 @@
             }
 
             if (typeof config.cookie !== "undefined") {
-                cookie_config.secure = typeof config.cookie.secure === "undefined" ? true : config.cookie.secure.match(/true/i)!==null;
-                cookie_config.httpOnly = typeof config.cookie.httpOnly === "undefined" ? true : config.cookie.httpOnly.match(/true/i)!==null;
+                cookie_config.secure = typeof config.cookie.secure === "undefined" ? true : Private.getBool(config.cookie.secure);
+                cookie_config.httpOnly = typeof config.cookie.httpOnly === "undefined" ? true : Private.getBool(config.cookie.httpOnly);
             }
 
             return cookie_config;
