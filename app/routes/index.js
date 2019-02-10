@@ -22,9 +22,9 @@
 "use strict";
 
 const csrf = require('csurf');
-const bodyParser = require('body-parser');
+//const bodyParser = require('body-parser');
 const csrfProtection = csrf({ cookie: true });
-const parseForm = bodyParser.urlencoded({ extended: false });
+//const parseForm = bodyParser.urlencoded({ extended: false });
 const express = require('express');
 const router = express.Router();
 const fs = require('fs');

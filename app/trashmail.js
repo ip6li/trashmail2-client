@@ -123,6 +123,7 @@ new lib: https://gitlab.com/nodemailer/mailparser2
             data.styles_jqueryui = Lib.get_minified_sri("styles_jqueryui");
             data.serverTimeDate = Lib.getServerTimeDate(acceptedLanguages);
             data.csrfToken = req.csrfToken();
+            logger.log ("debug", "render_index: " + inspect(data, false, 22));
             res.render(foundLanguage, data, callback);
             res.end();
         }

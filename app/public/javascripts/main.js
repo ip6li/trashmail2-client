@@ -79,8 +79,6 @@
     }
 
 
-
-
     function setDeleteIcons() {
         const links = $('#mails').find('img').collect('id');
         links.forEach(function (id) {
@@ -129,7 +127,6 @@
 
     function requestConfig() {
         const dfd = $.Deferred();
-        console.log("token: %o",token);
         $.ajax({
             method: "POST",
             url: url,
@@ -166,32 +163,40 @@
     }
 
 
+    function renderMails (data, b64mails) {
+        fields.divMails.empty();
+
+        if (validateName(data.name) && validateDomain(data.domain)) {
+            updateDivRcpt(data.name + "@" + data.domain);
+        }
+
+        const arr_mails = JSON.parse(Base64.decode(b64mails));
+        if (arr_mails.length > 0) {
+            arr_mails.forEach(function(item) {
+                fields.divMails.append(item);
+            });
+            setDeleteIcons();
+        } else {
+            //noinspection JSUnresolvedVariable
+            fields.divMails.append("<span class='nomails'>" + strings.nomails + "</span>");
+        }
+        setSubmitState(true);
+    }
+
+
     function submitButtonPressed(data) {
         setSubmitState(false);
         data.do = "getmails";
         $.ajax({
             method: "POST",
             url: url,
+            headers: {
+                'CSRF-Token': token // <-- is the csrf token as a header
+            },
             data: data
         })
             .done(function (b64mails) {
-                fields.divMails.empty();
-
-                if (validateName(data.name) && validateDomain(data.domain)) {
-                    updateDivRcpt(data.name + "@" + data.domain);
-                }
-
-                const arr_mails = JSON.parse(Base64.decode(b64mails));
-                if (arr_mails.length > 0) {
-                    arr_mails.forEach(function(item) {
-                        fields.divMails.append(item);
-                    });
-                    setDeleteIcons();
-                } else {
-                    //noinspection JSUnresolvedVariable
-                    fields.divMails.append("<span class='nomails'>" + strings.nomails + "</span>");
-                }
-                setSubmitState(true);
+                renderMails(data, b64mails);
             });
     }
 
@@ -254,8 +259,7 @@
     }
 
 
-    function updateMailAddress() {
-        const name = fields.nameInput.val();
+    function updateMailAddress(name = fields.nameInput.val()) {
         const domain = fields.domainSelect.val();
 
         if (typeof name !== undef && domain !== undef && name !== "" && domain !== "") {
@@ -267,6 +271,17 @@
         } else {
             fields.mailAddress.empty();
             fields.qrcode.empty();
+        }
+    }
+
+
+    function handleNameInputEvents (inputData, event) {
+        if (inputData.match(config.nameRegex)) {
+            updateMailAddress(inputData);
+            return event;
+        } else {
+            fields.nameInput.val(fields.nameInput.val().replace(/[^a-zA-Z0-9._+-]/g,""));
+            return false;
         }
     }
 
@@ -318,13 +333,14 @@
                     fields.mailAddress.empty();
                     return event;
                 }
-                if (fields.nameInput.val().match(config.nameRegex)) {
-                    updateMailAddress();
-                    return event;
-                } else {
-                    fields.nameInput.val(fields.nameInput.val().replace(/[^a-zA-Z0-9._+-]/g,""));
-                    return false;
-                }
+
+                const inputData = fields.nameInput.val();
+                return handleNameInputEvents (inputData, event);
+            });
+
+            fields.nameInput.on("paste", function (event) {
+                const inputData = event.originalEvent.clipboardData.getData('text');
+                return handleNameInputEvents (inputData, event);
             });
 
             fields.domainSelect.change(function () {
