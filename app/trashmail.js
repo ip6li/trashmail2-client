@@ -75,7 +75,7 @@ new lib: https://gitlab.com/nodemailer/mailparser2
                 MessageHandler.deleteMessage(uid).then((result)=> {
                     logger.log("debug", "doDelete: delete message uid: " + result);
                     if (!res.finished) {
-                        res.write(result);
+                        res.json(result);
                         res.end();
                     }
                 }).catch((err) => {
@@ -137,14 +137,14 @@ new lib: https://gitlab.com/nodemailer/mailparser2
 
                 MessageHandler.loadMessages(realRcpt, foundLanguage).then((htmlMails)=>{
                     if (!res.finished) {
-                        res.write(Base64.encode(JSON.stringify(htmlMails)));
+                        res.json(Base64.encode(JSON.stringify(htmlMails)));
                         res.end();
                     }
                 }).then(()=> {
                     return Promise.resolve();
                 }).catch((err)=> {
                     logger.log("error", "Cannot load messages: " + err.message);
-                    res.send(JSON.stringify(
+                    res.json(JSON.stringify(
                         []
                     ));
                 });

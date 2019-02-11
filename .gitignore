@@ -4,6 +4,7 @@
 node_modules
 app/node_modules
 app/sessions
+app/cache
 app/client_js/qrcode.bundle.js
 app/client_js/package-lock.json
 app/client_js/validator.bundle.js

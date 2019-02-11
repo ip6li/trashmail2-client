@@ -32,6 +32,7 @@
 
     const fields = {};
     const strings = {};
+    const max_len = 64;
 
     const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     
@@ -56,13 +57,12 @@
 
 
     function setSubmitState(state) {
-        const submit_id = $("#submit");
-        submit_id.prop("disabled", !state);
+        fields.submitButton.prop("disabled", !state);
     }
 
 
     function validateDomain(domain) {
-        if (domain.length > 64) {
+        if (domain.length > max_len) {
             return false;
         }
         const re = new RegExp(config.domainRegex);
@@ -71,7 +71,7 @@
 
 
     function validateName(name) {
-        if (name.length > 64 || name.length < 3) {
+        if (name.length > max_len || name.length < 3) {
             return false;
         }
         const re = new RegExp(config.nameRegex);
@@ -80,7 +80,7 @@
 
 
     function setDeleteIcons() {
-        const links = $('#mails').find('img').collect('id');
+        const links = fields.divMails.find('img').collect('id');
         links.forEach(function (id) {
             const img = $('#' + id);
 
@@ -144,14 +144,12 @@
 
 
     function setMailForState(state) {
-        const divrcpt = $("#divrcpt");
-        const divrcpt_label = $("#mails_for_label");
         if (state) {
-            divrcpt.show();
-            divrcpt_label.show();
+            fields.divrcpt.show();
+            fields.divrcpt_label.show();
         } else {
-            divrcpt.hide();
-            divrcpt_label.hide();
+            fields.divrcpt.hide();
+            fields.divrcpt_label.hide();
         }
     }
 
@@ -237,6 +235,8 @@
         fields.main = $("#main");
         fields.qrcode = $("#qrcode");
         fields.divMails = $("#mails");
+        fields.divrcpt = $("#divrcpt");
+        fields.divrcpt_label = $("#mails_for_label");
     };
 
 
