@@ -178,7 +178,7 @@
             //noinspection JSUnresolvedVariable
             fields.divMails.append("<span class='nomails'>" + strings.nomails + "</span>");
         }
-        setSubmitState(true);
+        checkSendButton();
     }
 
 
@@ -258,10 +258,15 @@
         fields.domainSelect.val(domain);
     }
 
+    
+    function checkSendButton(name = fields.nameInput.val()) {
+        const domain = fields.domainSelect.val();
+        setSubmitState((validateName(name) && validateDomain(domain)));
+    }
 
+    
     function updateMailAddress(name = fields.nameInput.val()) {
         const domain = fields.domainSelect.val();
-
         if (typeof name !== undef && domain !== undef && name !== "" && domain !== "") {
             if (validateName(name) && validateDomain(domain)) {
                 const emailAddress = name + "@" + domain;
@@ -329,6 +334,7 @@
             });
 
             fields.nameInput.keyup(function (event) {
+                checkSendButton();
                 if (fields.nameInput.val().length<3) {
                     fields.mailAddress.empty();
                     return event;
@@ -340,6 +346,7 @@
 
             fields.nameInput.on("paste", function (event) {
                 const inputData = event.originalEvent.clipboardData.getData('text');
+                checkSendButton(inputData);
                 return handleNameInputEvents (inputData, event);
             });
 
@@ -386,7 +393,7 @@
             fields.dialogDelete.empty().append(strings.ackdel);
 
             fields.main.show();
-            setSubmitState(true);
+            setSubmitState(false);
         });
     });
 
