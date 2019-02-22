@@ -141,19 +141,11 @@ class Test1(unittest.TestCase):
             raise err
 
         try:
-            submit_button = WebDriverWait(self.driver, 10).until(
-                ec.element_to_be_clickable((By.XPATH, "//*[@id='submit']"))
-            )
-            self.do_screenshot("ok")
-            self.printTestCount("found submit button")
-        except Exception as err:
-            print("element_to_be_clickable submit failed")
-            print(err)
-            self.do_screenshot()
-            raise err
-
-        try:
             user_input = self.driver.find_element_by_xpath("//*[@id='name']")
+            WebDriverWait(self.driver, 10).until(
+                lambda driver: user_input.is_displayed()
+            )
+
             user_input.click()
             user_input.send_keys(test_mail_name)
             self.printTestCount("Entered username")
@@ -169,6 +161,18 @@ class Test1(unittest.TestCase):
             self.printTestCount("Selected domain")
         except Exception as err:
             print("select domain - find_element domain failed")
+            print(err)
+            self.do_screenshot()
+            raise err
+
+        try:
+            submit_button = WebDriverWait(self.driver, 10).until(
+                ec.element_to_be_clickable((By.XPATH, "//*[@id='submit']"))
+            )
+            self.do_screenshot("ok")
+            self.printTestCount("found submit button")
+        except Exception as err:
+            print("element_to_be_clickable submit failed")
             print(err)
             self.do_screenshot()
             raise err
