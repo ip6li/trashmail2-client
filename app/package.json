@@ -14,15 +14,9 @@
   },
   "dependencies": {
     "body-parser": "~1.18.3",
-<<<<<<< HEAD
     "compression": "^1.7.4",
     "connect-mongodb-session": "^2.0.8",
     "cookie-parser": "^1.4.4",
-=======
-    "compression": "~1.7.3",
-    "connect-mongodb-session": "~2.0.7",
-    "cookie-parser": "~1.4.3",
->>>>>>> circuitbreaker
     "csurf": "~1.9.0",
     "debug": "~2.6.3",
     "dnsbl-lookup": "~0.3.3",
@@ -36,16 +30,10 @@
     "js-base64": "^2.5.1",
     "mailparser": "~2.4.3",
     "md5": "~2.2.1",
-<<<<<<< HEAD
-    "mongodb": "^3.1.13",
-    "morgan": "~1.9.1",
-    "pug": "^2.0.4",
-=======
-    "mongodb": "~3.1.10",
+    "mongodb": "^3.2.7",
     "morgan": "~1.9.1",
     "opossum": "~3.0.0",
-    "pug": "~2.0.3",
->>>>>>> circuitbreaker
+    "pug": "^2.0.4",
     "secure-filters": "^1.0.5",
     "serve-favicon": "~2.4.2",
     "session-file-store": "~1.0.0",
