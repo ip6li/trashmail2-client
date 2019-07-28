@@ -15,6 +15,7 @@
   "dependencies": {
     "body-parser": "~1.18.3",
     "compression": "~1.7.3",
+    "connect-mongodb-session": "~2.0.7",
     "cookie-parser": "~1.4.3",
     "csurf": "~1.9.0",
     "debug": "~2.6.3",
@@ -30,8 +31,8 @@
     "mailparser": "~2.4.3",
     "md5": "~2.2.1",
     "mongodb": "~3.1.10",
-    "connect-mongodb-session": "~2.0.7",
     "morgan": "~1.9.1",
+    "opossum": "~3.0.0",
     "pug": "~2.0.3",
     "secure-filters": "^1.0.5",
     "serve-favicon": "~2.4.2",

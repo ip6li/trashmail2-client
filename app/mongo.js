@@ -23,16 +23,21 @@
     "use strict";
 
     const MongoClient = require("mongodb").MongoClient;
-    const ObjectID = require('mongodb').ObjectID;
     const assert = require("assert");
     const Config = require("./config").Config;
     const config = Config.getConfig();
     const logger = require("./logger").logger;
+    const circuitBreaker = require('opossum');
 
 
-    class Mongo {
+    class Private {
 
-        static connectdb() {
+        constructor() {
+
+        }
+
+
+        connect() {
             return new Promise((resolve, reject) => {
                 MongoClient.connect(
                     config.mongo_url,
@@ -52,7 +57,8 @@
             });
         }
 
-        static find(rcpt) {
+
+        find(rcpt) {
             if (typeof rcpt !== "string") {
                 return Promise.reject("rcpt is not a string");
             }
@@ -69,21 +75,21 @@
                         sort = 1;
                     }
                 }
-                
+
                 collection
                     .find({"mailTo": rcpt.toLowerCase()})
                     .sort({"timestamp": sort})
                     .toArray(function (err, docs) {
-                    if (err) {
-                        logger.warn("Query failed. ${err.stack}");
-                        return reject (err);
-                    }
-                    resolve (docs);
-                });
+                        if (err) {
+                            logger.warn("Query failed. ${err.stack}");
+                            return reject (err);
+                        }
+                        resolve (docs);
+                    });
             });
         }
 
-        static delete(id) {
+        delete(id) {
             return new Promise((resolve, reject) => {
                 const db = this.mongo_db.db(config.mongo_db);
                 assert.notStrictEqual(null, db);
@@ -101,7 +107,39 @@
                 });
             });
         }
-        
+
+    }
+
+    class Mongo {
+
+        constructor() {
+            this.options = {
+                timeout: 3000, // If our function takes longer than 3 seconds, trigger a failure
+                errorThresholdPercentage: 50, // When 50% of requests fail, trip the circuit
+                resetTimeout: 30000 // After 30 seconds, try again.
+            };
+
+            this.db = new Private();
+            const breaker = circuitBreaker(this.db.connect, this.options);
+
+            return breaker.fire()
+                .then(console.log)
+                .catch(console.error);
+        }
+
+        find(rcpt) {
+            const breaker = circuitBreaker(this.db.find, this.options);
+            return breaker.fire(rcpt)
+                .then(console.log)
+                .catch(console.error);
+        }
+
+        delete(id) {
+            const breaker = circuitBreaker(this.db.delete, this.options);
+            return breaker.fire(id)
+                .then(console.log)
+                .catch(console.error);
+        }
     }
 
     module.exports = Mongo;
