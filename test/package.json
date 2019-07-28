@@ -7,6 +7,6 @@
     "test1": "./test.sh"
   },
   "devDependencies": {
-    "jshint": "^2.9.2"
+    "jshint": "^2.10.2"
   }
 }
