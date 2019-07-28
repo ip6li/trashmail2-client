@@ -120,15 +120,7 @@
                 });
             }
         }
-        
-        static setupMongoDB() {
-            Mongo.connectdb().then ((db) => {
-                app.mongo_db = db;
-                assert.notStrictEqual(null, app.mongo_db);
-                return Promise.resolve(db);
-            });
-        }
-        
+
         static setupCompression () {
             app.use(compression());
             app.use(minify({
@@ -240,7 +232,6 @@
 
             Private.setupErrorHandler();
             Private.setup404Handler();
-            Private.setupMongoDB();
         }
         
     }

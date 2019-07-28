@@ -17,6 +17,7 @@ app/public/stylesheets/style.min.css
 app/public/tmp
 trashmail2-client.iml
 npm-debug.log
+out
 test.js
 test/node_modules
 test/test-libs
