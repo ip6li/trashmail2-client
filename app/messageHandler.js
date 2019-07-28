@@ -82,8 +82,7 @@
             });
 
             promise = promise.then((id) => {
-                const db = new Mongo();
-                return db.delete(id);
+                return Mongo.delete(id);
             });
 
             promise = promise.then(() => {
@@ -99,8 +98,7 @@
         static loadMessages (realTo, remoteLocale) {
             const rcpt = realTo.email + "@" + realTo.domain;
 
-            const db = new Mongo();
-            let promise = db.find(rcpt).then((docs) => {
+            let promise = Mongo.find(rcpt).then((docs) => {
                 const password = realTo.password;
                 assert.notStrictEqual("undefined", typeof password);
                 docs.forEach(function (item) {

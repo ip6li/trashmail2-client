@@ -232,7 +232,6 @@
 
             Private.setupErrorHandler();
             Private.setup404Handler();
-            Private.setupMongoDB();
         }
         
     }
