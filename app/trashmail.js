@@ -33,6 +33,7 @@ new lib: https://gitlab.com/nodemailer/mailparser2
     const Config = require("./config").Config;
     const config = Config.getConfig();
     const validation = require("./validation");
+    const Validator = require("./validation").Validator;
     const Base64 = require('js-base64').Base64;
     const uidRegex = "^[a-zA-Z0-9_]{2,128}$";
     const maxNumberOfLanguages = 10;
@@ -44,13 +45,14 @@ new lib: https://gitlab.com/nodemailer/mailparser2
 
     Array.prototype.indexOfnocase = Lib.indexOfnocase;
 
-    validation.setGlobalConfig(config);
+    Validator.setGlobalConfig(config);
 
     
     class Private {
 
         static goAway(req, res, ip) {
-            logger.log ("debug", "goAway: " + inspect (req, false, 22));
+            //logger.log ("debug", "goAway: " + inspect (req, false, 22));
+            logger.log ("debug", "goAway: " + ip);
             res.render("blacklisted", {
                 title: config.title,
                 ip: ip
@@ -123,14 +125,13 @@ new lib: https://gitlab.com/nodemailer/mailparser2
             data.styles_jqueryui = Lib.get_minified_sri("styles_jqueryui");
             data.serverTimeDate = Lib.getServerTimeDate(acceptedLanguages);
             data.csrfToken = req.csrfToken();
-            logger.log ("debug", "render_index: " + inspect(data, false, 22));
             res.render(foundLanguage, data, callback);
             res.end();
         }
 
         static doGetMail(data, res, password, foundLanguage) {
             const realRcpt = [];
-            if (validation.validateName(data.name) && validation.validateDomain(data.domain)) {
+            if (Validator.validateName(data.name) && Validator.validateDomain(data.domain)) {
                 realRcpt.email = data.name;
                 realRcpt.domain = data.domain;
                 realRcpt.password = password;
@@ -162,14 +163,14 @@ new lib: https://gitlab.com/nodemailer/mailparser2
 
         static doRequest (handler, session, req, res, next, password) {
             localConfig = Config.getLocalConfig();
-            validation.setLocalConfig(localConfig);
+            Validator.setLocalConfig(localConfig);
 
             validDomains = localConfig.domains;
             let ip = req.headers["x-real-ip"];
             if (typeof ip !== "string") {
                 ip = req.ip;
             }
-            if (validation.checkBlacklistIp(ip)) {
+            if (Validator.checkBlacklistIp(ip)) {
                 Private.goAway(req, res, ip);
             }
 
@@ -198,7 +199,7 @@ new lib: https://gitlab.com/nodemailer/mailparser2
             const domain = req.query.domain;
             if ((typeof name === "string") && (typeof domain === "string")) {
                 const realRcpt = [];
-                if (validation.validateName(name) && validation.validateDomain(domain) && validation.validateEmail(name + "@" + domain)) {
+                if (Validator.validateName(name) && Validator.validateDomain(domain) && Validator.validateEmail(name + "@" + domain)) {
                     realRcpt.email = name;
                     realRcpt.domain = domain;
                     realRcpt.password = password;

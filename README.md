@@ -2,6 +2,7 @@ Trashmail
 =========
 
 [![Build Status](https://travis-ci.com/ip6li/trashmail-tester.svg?branch=master)](https://travis-ci.com/ip6li/trashmail-tester)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 Provides a web gui for a disposable mail system. It is written in JavaScript/NodeJS
 and uses Express/PUG for templating.

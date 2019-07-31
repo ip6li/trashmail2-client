@@ -36,106 +36,97 @@
     const domainRegex = "^([a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.){1,2}[a-zA-Z]{2,}$";
     const nameRegex = "^[a-zA-Z0-9._+-]{3,64}$";
 
-    
+
     class Validator {
-        
+
+        static setGlobalConfig (config) {
+            globalConfig = config;
+        };
+
+        static setLocalConfig (config) {
+            localConfig = config;
+        };
+
+        static checkBlacklistIp (ip) {
+            if (localConfig.blacklisted_net instanceof Array) {
+                logger.debug("checkBlacklistIp: " + ip);
+                return ipRangeCheck(ip, localConfig.blacklisted_net);
+            }
+        };
+
+        static validateDomain (domain) {
+            if (localConfig.domains instanceof Array) {
+                if (domain.length > 64) {
+                    return false;
+                }
+                const re = new RegExp(domainRegex);
+                if (!domain.match(re)) {
+                    return false;
+                }
+                return localConfig.domains.indexOf(domain) !== -1;
+            } else {
+                logger.log("error", "domains not set in configuration");
+                return false;
+            }
+        };
+
+        static validateName (name) {
+            if (localConfig.reservedNames instanceof Array) {
+                if (name.length > 64) {
+                    return false;
+                }
+                const re = new RegExp(nameRegex);
+                if (!name.match(re)) {
+                    return false;
+                }
+                return localConfig.reservedNames.indexOfnocase(name) === -1;
+            } else {
+                return true;
+            }
+        };
+
+        static validateEmail (email) {
+            return validator.isEmail(email);
+        };
+
+        static checkRbl (ip) {
+            return new Promise((resolve, reject) => {
+                if (localConfig.use_rbl) {
+                    const rblList = localConfig.rbls;
+                    let dnsbl = "undefined";
+                    if (rblList instanceof Array) {
+                        dnsbl = new rblLookup.dnsbl(ip, rblList);
+                    } else {
+                        dnsbl = new rblLookup.dnsbl(ip);
+                    }
+                    dnsbl.on('error', function (error, blocklist) {
+                        logger.warn("checkRbl: " + error);
+                        // resolve if blacklist is not available
+                        if (error.toString().match(/ENODATA/)) {
+                            resolve("ok");
+                        }
+                        return reject("found");
+                    });
+                    dnsbl.on('data', function (result, blocklist) {
+                        logger.log("debug", result.status + ' in ' + blocklist.zone);
+                    });
+                    dnsbl.on('done', function () {
+                        resolve("ok");
+                    });
+                } else {
+                    resolve("ok");
+                }
+            });
+        };
+
+        static validateOutput (data) {
+            const escapedData = htmlEscape(data);
+            return escapedData === data;
+        };
+
     }
 
-    
-    const setGlobalConfig = function (config) {
-        globalConfig = config;
-    };
 
-
-    const setLocalConfig = function (config) {
-        localConfig = config;
-    };
-
-
-    const checkBlacklistIp = function (ip) {
-        if (localConfig.blacklisted_net instanceof Array) {
-            return ipRangeCheck(ip, localConfig.blacklisted_net);
-        }
-    };
-
-
-    const validateDomain = function (domain) {
-        if (localConfig.domains instanceof Array) {
-            if (domain.length > 64) {
-                return false;
-            }
-            const re = new RegExp(domainRegex);
-            if (!domain.match(re)) {
-                return false;
-            }
-            return localConfig.domains.indexOf(domain) !== -1;
-        } else {
-            logger.log("error", "domains not set in configuration");
-            return false;
-        }
-    };
-
-
-    const validateName = function (name) {
-        if (localConfig.reservedNames instanceof Array) {
-            if (name.length > 64) {
-                return false;
-            }
-            const re = new RegExp(nameRegex);
-            if (!name.match(re)) {
-                return false;
-            }
-            return localConfig.reservedNames.indexOfnocase(name) === -1;
-        } else {
-            return true;
-        }
-    };
-
-
-    const validateEmail = function (email) {
-        return validator.isEmail(email);
-    };
-
-
-    const checkRbl = function (ip) {
-        return new Promise((resolve, reject) => {
-            if (localConfig.use_rbl) {
-                const rblList = localConfig.rbls;
-                let dnsbl = "undefined";
-                if (rblList instanceof Array) {
-                    dnsbl = new rblLookup.dnsbl(ip, rblList);
-                } else {
-                    dnsbl = new rblLookup.dnsbl(ip);
-                }
-                dnsbl.on('error', function (error, blocklist) {
-                    return reject("found");
-                });
-                dnsbl.on('data', function (result, blocklist) {
-                    logger.log("debug", result.status + ' in ' + blocklist.zone);
-                });
-                dnsbl.on('done', function () {
-                    resolve("ok");
-                });
-            } else {
-                resolve("ok");
-            }
-        });
-    };
-
-
-    const validateOutput = function (data) {
-        const escapedData = htmlEscape(data);
-        return escapedData === data;
-    };
-
-
-    module.exports.setGlobalConfig = setGlobalConfig;
-    module.exports.setLocalConfig = setLocalConfig;
-    module.exports.checkBlacklistIp = checkBlacklistIp;
-    module.exports.validateDomain = validateDomain;
-    module.exports.validateName = validateName;
-    module.exports.validateEmail = validateEmail;
-    module.exports.checkRbl = checkRbl;
-    module.exports.validateOutput = validateOutput;
+    module.exports.Validator = Validator;
 
 }());
