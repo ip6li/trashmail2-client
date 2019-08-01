@@ -32,7 +32,6 @@ new lib: https://gitlab.com/nodemailer/mailparser2
     const Lib = require("./lib").Lib;
     const Config = require("./config").Config;
     const config = Config.getConfig();
-    const validation = require("./validation");
     const Validator = require("./validation").Validator;
     const Base64 = require('js-base64').Base64;
     const uidRegex = "^[a-zA-Z0-9_]{2,128}$";
@@ -176,7 +175,7 @@ new lib: https://gitlab.com/nodemailer/mailparser2
 
             if (!session.rblOk) {
                 Promise.all([
-                    validation.checkRbl(ip)
+                    Validator.checkRbl(ip)
                 ])
                     .then((data) => {
                         logger.log ("debug", "doRequest resolve: " + inspect(data, false, 22));
