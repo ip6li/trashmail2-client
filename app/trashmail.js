@@ -114,14 +114,12 @@ new lib: https://gitlab.com/nodemailer/mailparser2
 
             data.title = config.title;
             data.validDomains = localConfig.domains;
-            data.mainjs = Lib.get_minified_sri("mainjs");
-            data.base64js = Lib.get_minified_sri("base64js");
-            data.jqueryjs = Lib.get_minified_sri("jquery");
-            data.jqueryuijs = Lib.get_minified_sri("jqueryui");
-            data.qrcode = Lib.get_minified_sri("qrcode");
-            data.validator = Lib.get_minified_sri("validator");
-            data.styles = Lib.get_minified_sri("styles");
-            data.styles_jqueryui = Lib.get_minified_sri("styles_jqueryui");
+
+            const fileLocations = Object.keys(config.fileLocations);
+            fileLocations.forEach(function(i) {
+                data[i] = Lib.get_minified_sri(i);
+            });
+
             data.serverTimeDate = Lib.getServerTimeDate(acceptedLanguages);
             data.csrfToken = req.csrfToken();
             res.render(foundLanguage, data, callback);
