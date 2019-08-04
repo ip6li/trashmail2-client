@@ -43,38 +43,13 @@
             defaults.mainjs = {};
             defaults.mainjs.uri = "/javascripts/main.min.js";
             defaults.mainjs.file = __dirname + "/public/javascripts/main.min.js";
-            defaults.base64js = {};
-            defaults.base64js.uri = "/javascripts/js-base64/base64.min.js";
-            defaults.base64js.file = __dirname + "/node_modules/js-base64/base64.min.js";
-            defaults.jqueryjs = {};
-            defaults.jqueryjs.uri = "/javascripts/jquery/jquery.min.js";
-            defaults.jqueryjs.file = __dirname + '/node_modules/jquery/dist/jquery.min.js';
-            defaults.jqueryuijs = {};
-            defaults.jqueryuijs.uri = "/javascripts/jquery-ui/jquery-ui.min.js";
-            defaults.jqueryuijs.file = __dirname + "/node_modules/jquery-ui-dist/jquery-ui.min.js";
-            defaults.qrcode = {};
-            defaults.qrcode.uri = "/javascripts/qrcode.min.js";
-            defaults.qrcode.file = __dirname + "/public/javascripts/qrcode.min.js";
-            defaults.validator = {};
-            defaults.validator.uri = "/javascripts/validator.min.js";
-            defaults.validator.file = __dirname + "/public/javascripts/validator.min.js";
+
             defaults.styles = {};
             defaults.styles.uri = "/stylesheets/style.min.css";
             defaults.styles.file = __dirname + "/public/stylesheets/style.min.css";
             defaults.styles_jqueryui = {};
             defaults.styles_jqueryui.uri = "/stylesheets/jquery-ui/jquery-ui.min.css";
             defaults.styles_jqueryui.file = __dirname + "/node_modules/jquery-ui-dist/jquery-ui.min.css";
-
-            if (typeof process.env.DEBUG_CLIENT !== "undefined") {
-                defaults.mainjs.uri = "/javascripts/main.js";
-                defaults.mainjs.file = __dirname + "/public/javascripts/main.js";
-                defaults.base64js.uri = "/javascripts/js-base64/base64.js";
-                defaults.base64js.file = __dirname + "/node_modules/js-base64/base64.js";
-                defaults.jquery.uri = "/javascripts/jquery/jquery.js";
-                defaults.jquery.file = __dirname + '/node_modules/jquery/dist/jquery.js';
-                defaults.jqueryui.uri = "/javascripts/jquery-ui/jquery-ui.js";
-                defaults.jqueryui.file = __dirname + "/node_modules/jquery-ui-dist/jquery-ui.js";
-            }
 
             return defaults;
         }

@@ -29,7 +29,6 @@
     };
 
 
-    module.exports.validateEmail = validateEmail;
-    window.validateEmail = validateEmail;
-
 }());
+
+export default validateEmail;

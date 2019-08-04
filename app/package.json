@@ -6,10 +6,9 @@
   "scripts": {
     "test": "./test.sh",
     "start": "bin/www",
-    "uglify_js": "./node_modules/uglify-es/bin/uglifyjs public/javascripts/main.js --compress --output public/javascripts/main.min.js",
     "uglify_css": "./node_modules/uglifycss/uglifycss public/stylesheets/style.css --output public/stylesheets/style.min.css",
     "postinstall": "npm run setup",
-    "setup": "cd client_js && npm install && cd .. && npm run uglify_css && npm run uglify_js",
+    "setup": "cd client_js && npm install && cd .. && npm run uglify_css",
     "clean": "rm -f public/javascripts/*.min.js; rm -f public/stylesheets/*.min.css"
   },
   "dependencies": {

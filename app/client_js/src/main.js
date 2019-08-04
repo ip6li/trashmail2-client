@@ -18,8 +18,12 @@
 /* jshint browser: true */
 /* jshint jquery: true */
 /* jshint esversion: 6  */
-/* global Base64 */
-/* global Intl */
+
+import $ from 'jquery';
+import Base64 from "jsbase64";
+import createQrCode from "./reqqrcode";
+
+global.jQuery = require('jquery');
 
 (function () {
     "use strict";
@@ -117,7 +121,7 @@
 
     function requestQrCode(name, domain) {
         if (config.qrcode) {
-            window.createQrCode(name, domain).then(function(qrcode) {
+            createQrCode(name, domain).then(function(qrcode) {
                 const img = "<img src='" + qrcode + "' alt='qrCode'/>";
                 fields.qrcode.empty().append(img);
             });

@@ -18,27 +18,19 @@
 /* jshint node: true */
 /*jshint esversion: 6 */
 /*jshint bitwise: false*/
-/*global require, module, intl,  __dirname, Intl */
 
-(function () {
-    "use strict";
-
-    const QRCode = require('qrcode');
-
-
-    function createQrCode(name, domain, qrurl = ".") {
-        qrurl += "/?name=" + name + "&domain=" + domain;
-        const qrOptions = {
-            errorCorrectionLevel: 'H'
-        };
-        return QRCode.toDataURL(qrurl, qrOptions).then((qrcode) => {
-            return qrcode;
-        }).catch(() => {
-            return "";
-        });
-    }
+function createQrCode(name, domain, qrurl = ".") {
+    const QRCode = require("qrcode");
+    qrurl += "/?name=" + name + "&domain=" + domain;
+    const qrOptions = {
+        errorCorrectionLevel: 'H'
+    };
+    return QRCode.toDataURL(qrurl, qrOptions).then((qrcode) => {
+        return qrcode;
+    }).catch(() => {
+        return "";
+    });
+}
 
 
-    window.createQrCode = createQrCode;
-
-}());
+export default createQrCode;
