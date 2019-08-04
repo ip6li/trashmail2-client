@@ -16,17 +16,19 @@
  */
 
 /* jshint browser: true */
-/* jshint jquery: true */
 /* jshint esversion: 6  */
+/* global global, require */
 
 import $ from 'jquery';
-import Base64 from "jsbase64";
 import createQrCode from "./reqqrcode";
 
-global.jQuery = require('jquery');
+require('jquery-ui-dist/jquery-ui');
+//require('jquery-ui-dist/jquery-ui.css');
 
 (function () {
     "use strict";
+
+    const Base64 = require("js-base64").Base64;
 
     let name = null;
     let domain = null;
@@ -206,6 +208,7 @@ global.jQuery = require('jquery');
     function displayDialog(encryptedUid) {
         fields.dialogDelete.dialog({
             dialogClass: "no-close",
+            title: strings.titledelete,
             buttons: [
                 {
                     id: "delete",

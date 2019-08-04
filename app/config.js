@@ -47,6 +47,7 @@
             defaults.styles = {};
             defaults.styles.uri = "/stylesheets/style.min.css";
             defaults.styles.file = __dirname + "/public/stylesheets/style.min.css";
+
             defaults.styles_jqueryui = {};
             defaults.styles_jqueryui.uri = "/stylesheets/jquery-ui/jquery-ui.min.css";
             defaults.styles_jqueryui.file = __dirname + "/node_modules/jquery-ui-dist/jquery-ui.min.css";

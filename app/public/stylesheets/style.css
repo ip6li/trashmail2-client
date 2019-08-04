@@ -123,6 +123,9 @@
 
 }
 
+.ui-dialog {
+    background: white;
+}
 
 body {
     padding: 50px;

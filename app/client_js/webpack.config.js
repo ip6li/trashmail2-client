@@ -1,8 +1,12 @@
+/* jshint esversion: 6  */
+/* global require, module, __dirname */
+
 const webpack = require("webpack");
 const path = require('path');
 
 module.exports = {
     entry: './src/main.js',
+    mode: 'production',
     output: {
         filename: 'main.min.js',
         path: path.resolve(__dirname, '../public/javascripts')
@@ -12,13 +16,31 @@ module.exports = {
             $: "jquery",
             jQuery: "jquery",
             'window.jQuery': 'jquery',
-            Base64: "jsbase64"
         })
     ],
     resolve: {
         alias: {
-            jquery: "jquery/src/jquery",
-            jsbase64: "js-base64/base64.js"
+            jquery: "jquery/src/jquery"
         }
+    },
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                use: 'css-loader'
+            },
+            {
+                test: /\.(jpe?g|png|gif)$/i,
+                use: {
+                    loader: "file-loader",
+                    options: {
+                        outputPath: (url, resourcePath, context) => {
+                            const relativePath = path.relative(context, resourcePath);
+                            return `{relativePath}/../../../public/tmp/${url}`;
+                        }
+                    },
+                }
+            },
+        ]
     }
 };
