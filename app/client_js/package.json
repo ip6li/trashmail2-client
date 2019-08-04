@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "clean_tmp": "rm -f public/tmp/*",
-    "postinstall": "npm run clean_tmp; node_modules/webpack/bin/webpack.js"
+    "postinstall": "npm run clean_tmp; node node_modules/webpack/bin/webpack.js"
   },
   "dependencies": {
     "jquery": "^3.4.1",
