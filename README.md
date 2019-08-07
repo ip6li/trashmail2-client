@@ -4,10 +4,44 @@ Trashmail
 [![Build Status](https://travis-ci.com/ip6li/trashmail-tester.svg?branch=master)](https://travis-ci.com/ip6li/trashmail-tester)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
+This tool is for building a trashmail service. It is suitable either for private
+networks (for example your company) or public services to provide temporary
+e-mail addresses to your users.
+
+Public installation is at https://spamwc.de
+
+Use Cases
+---------
+
+Many services want you to provide a e-mail address. After providing that, you may get a lot of spam,
+they are calling that opt-out newsletters. Now this disposable e-mail tool helps you. If you registered
+somewhere for somewhat and do not like their newsletter you will get desired information and you
+can forget unsolicited newsletter.
+
+How to support
+==============
+
+If you are interested to support this project please set up a pull request. You may get access
+to our private Gitlab system then. Github is a mirror only due to security reasons, but it
+contains a exact copy of that private repository. 
+
+Documentation
+=============
+
+See /doc folder for further documentation.
+
+Architecture
+============
+
+This solution consists on at least 3 + 1 core services:
+
+* Trashmail2-Client (this tool) - this is a Web-GUI for retrieving e-mails
+* MongoDB - this is the storage medium for received e-mail
+* lmtp-server - for receiving e-mail. It is strongly recommended to set up a SMTP mailgateway in front of this server
+* smtp server - we recommend to use a Postfix server to receive mails from Internet, doing some filtering, routing etc. and relay them to lmtp-server  
+
 Provides a web gui for a disposable mail system. It is written in JavaScript/NodeJS
 and uses Express/PUG for templating.
-
-This project replaces old Trashmail project, which suffered on scalability issues.
 
 IMPORTANT
 ---------
@@ -32,16 +66,7 @@ Features
 Status
 ------
 
-Beta : Works in a single production environment.
-
-Requirements
-============
-
- * MongoDB backend.
- * LMTP Trashmail Connector, see ip6li/lmtp-server
- * SMTP server configured for LMTP backend, Postfix is strongly recommended
- * NodeJS 10 or newer - older may work, but your mileage may vary
- * Nginx (or other web server) as reverse proxy for NodeJS server is strongly recommended
+Production: Works in a single production environment.
 
 Optional
 --------
@@ -51,99 +76,6 @@ full-icu. *full-icu not found* warning will tell you, what to to. If you are
 using nodejs from your Linux distribution you probably get a version with
 full libicu support, so you do not have to care about this. If warning does not
 appear do not install full-icu. 
- 
-Postfix
-=======
-
-At least you need an relay_domains file to tell postfix to forward messages
-to LMTP Trashmail backend.
-
-    <your domain>	lmtp:[172.16.238.12]:10025
-
-
-    
-Install
-=======
-
-* git clone somewhere in filesystem as any user with exception of root.
-Running as root **will** fuck up your server!
-
-* npm install
-* customize ~/trashmail.json and ~/views/index.&lt;lang&gt;.pug
-
-trashmail.json
---------------
-
-This file must be located in exactly one of following locations:
-
-* /etc/trashmail.json
-* /usr/local/etc/trashmail.json
-* ~/trashmail.json
-* &lt;where this application is running&gt;/trashmail.json
-
-See project wiki in Github for description
-
-Docker
-------
-
-Example for docker-compose file:
-
-```
-version: '3.3'
-
-networks:
-  back:
-    # use a custom driver, with no options
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-      -
-        subnet: 172.16.239.0/24
-
-services:
-  mongodb:
-    image: mongo
-    networks:
-       back:
-        ipv4_address: 172.16.239.11
-    logging:
-      driver: json-file
-
-  lmtp-server:
-    depends_on:
-      - mongodb
-    build:
-      context: ./lmtp-server
-    networks:
-       back:
-        ipv4_address: 172.16.239.12
-    logging:
-      driver: json-file
-
-  trashmail-client:
-    depends_on:
-      - mongodb
-    build:
-      context: ./trashmail-client
-    networks:
-      back:
-        ipv4_address: 172.16.239.13
-    logging:
-      driver: json-file
-
-```
-
-These Docker containers starts MongoDB, LMTP Backend and Trashmail-Client.
-Postfix should send mails to 172.16.239.12:10025 and Nginx reverse-proxy should connect to
-172.16.239.13:3000.
- 
-Environment
-===========
-
-NODE_ENV [production|development]
-LOGLEVEL see Winston documentation for available log levels
-CONFIGPATH Custom path where to find config files
 
 Other OS
 ========
