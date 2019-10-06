@@ -23,7 +23,6 @@ import $ from 'jquery';
 import createQrCode from "./reqqrcode";
 
 require('jquery-ui-dist/jquery-ui');
-//require('jquery-ui-dist/jquery-ui.css');
 
 (function () {
     "use strict";

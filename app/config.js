@@ -82,6 +82,13 @@
 
     class Config {
 
+        static getBool(o) {
+            if (typeof o === "undefined") { return false; }
+            if (typeof o === "boolean") { return o; }
+            if (typeof o === "string") { return o.match(/true/i)!==null; }
+            return false;
+        }
+
         static getLocalConfig() {
             return Config.configFile(this.config.configRuntime);
         }

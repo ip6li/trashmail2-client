@@ -15,6 +15,7 @@ app/public/javascripts/bundle.min.js
 app/public/javascripts/qrcode.min.js
 app/public/stylesheets/style.min.css
 app/public/tmp
+app/client_js/dist
 trashmail2-client.iml
 npm-debug.log
 out

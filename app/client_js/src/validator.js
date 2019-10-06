@@ -19,16 +19,14 @@
 /*jshint esversion: 6 */
 /*global require, module,  __dirname */
 
-(function () {
-    'use strict';
 
-    const validator = require('validator');
+'use strict';
 
-    const validateEmail = function (email) {
-        return validator.isEmail(email);
-    };
+const validator = require('validator');
 
+const validateEmail = function (email) {
+    return validator.isEmail(email);
+};
 
-}());
 
 export default validateEmail;

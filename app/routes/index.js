@@ -17,14 +17,21 @@
 
 /* jshint node: true */
 /*jshint esversion: 6 */
-/*global require, module,  __dirname, config */
+/*global require, module,  __dirname */
 
 "use strict";
 
+const Config = require('../config').Config;
+const config = Config.getConfig();
 const csrf = require('csurf');
-//const bodyParser = require('body-parser');
-const csrfProtection = csrf({ cookie: true });
-//const parseForm = bodyParser.urlencoded({ extended: false });
+const csrfProtection = csrf({
+    cookie: {
+        httpOnly: Config.getBool(config.cookie.httpOnly),
+        secure: Config.getBool(config.cookie.secure),
+        domain: typeof config.cookie.domain === "undefined" ? "localhost" : config.cookie.domain,
+        sameSite: typeof config.cookie.sameSite === "undefined" ? true : config.cookie.sameSite
+    }
+});
 const express = require('express');
 const router = express.Router();
 const fs = require('fs');

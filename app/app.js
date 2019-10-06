@@ -26,7 +26,6 @@
     const type_number = "number";
 
     const util = require("util");
-    const assert = require("assert");
     const cookieParser = require('cookie-parser');
     const bodyParser = require('body-parser');
     const express = require("express");
@@ -40,7 +39,6 @@
     const minify = require("express-minify");
     const compression = require("compression");
     const routes = require("./routes");
-    const Mongo = require("./mongo");
 
     const Config = require("./config").Config;
     const config = Config.getConfig();
@@ -52,23 +50,14 @@
     
     class Private {
 
-        static getBool(o) {
-            if (typeof o === "undefined") { return false; }
-            if (typeof o === "boolean") { return o; }
-            if (typeof o === "string") { return o.match(/true/i)!==null; }
-            return false;
-        }
-
         static getCookieConfig() {
             const cookie_config = {};
 
-            if (app.get("env") === "development") {
-                cookie_config.secure = false;
-            }
-
             if (typeof config.cookie !== "undefined") {
-                cookie_config.secure = typeof config.cookie.secure === "undefined" ? true : Private.getBool(config.cookie.secure);
-                cookie_config.httpOnly = typeof config.cookie.httpOnly === "undefined" ? true : Private.getBool(config.cookie.httpOnly);
+                cookie_config.secure = typeof config.cookie.secure === "undefined" ? true : Config.getBool(config.cookie.secure);
+                cookie_config.httpOnly = typeof config.cookie.httpOnly === "undefined" ? true : Config.getBool(config.cookie.httpOnly);
+                cookie_config.domain = typeof config.cookie.domain === "undefined" ? "localhost" : config.cookie.domain;
+                cookie_config.sameSite = typeof config.cookie.sameSite === "undefined" ? true : config.cookie.sameSite;
             }
 
             return cookie_config;

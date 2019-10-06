@@ -19,7 +19,10 @@
 /*jshint esversion: 6 */
 /*jshint bitwise: false*/
 
-function createQrCode(name, domain, qrurl = ".") {
+
+'use strict';
+
+const createQrCode = function (name, domain, qrurl = ".") {
     const QRCode = require("qrcode");
     qrurl += "/?name=" + name + "&domain=" + domain;
     const qrOptions = {
@@ -30,7 +33,7 @@ function createQrCode(name, domain, qrurl = ".") {
     }).catch(() => {
         return "";
     });
-}
+};
 
 
 export default createQrCode;
