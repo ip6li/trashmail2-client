@@ -26,6 +26,7 @@ const config = Config.getConfig();
 const csrf = require('csurf');
 const csrfProtection = csrf({
     cookie: {
+        key: Config.getBool(config.cookie.secure) ? "__Secure-csrf" : "insecure-csrf",
         httpOnly: Config.getBool(config.cookie.httpOnly),
         secure: Config.getBool(config.cookie.secure),
         domain: typeof config.cookie.domain === "undefined" ? "localhost" : config.cookie.domain,
