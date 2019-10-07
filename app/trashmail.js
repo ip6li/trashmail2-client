@@ -122,6 +122,9 @@ new lib: https://gitlab.com/nodemailer/mailparser2
 
             data.serverTimeDate = Lib.getServerTimeDate(acceptedLanguages);
             data.csrfToken = req.csrfToken();
+            if (typeof res.get('Content-Type') === "undefined") {
+                res.set('Content-Type', 'text/html');
+            }
             res.render(foundLanguage, data, callback);
             res.end();
         }
