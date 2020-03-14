@@ -56,7 +56,7 @@
             if (typeof config.cookie !== "undefined") {
                 cookie_config.secure = typeof config.cookie.secure === "undefined" ? true : Config.getBool(config.cookie.secure);
                 cookie_config.httpOnly = typeof config.cookie.httpOnly === "undefined" ? true : Config.getBool(config.cookie.httpOnly);
-                cookie_config.domain = typeof config.cookie.domain === "undefined" ? "localhost" : config.cookie.domain;
+                //cookie_config.domain = typeof config.cookie.domain === "undefined" ? "localhost" : config.cookie.domain;
                 cookie_config.sameSite = typeof config.cookie.sameSite === "undefined" ? true : config.cookie.sameSite;
             }
 

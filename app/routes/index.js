@@ -62,7 +62,6 @@ router.get('/', csrfProtection, function (req, res, next) {
 /* POST home page. */
 router.post('/', csrfProtection, function (req, res, next) {
     const sess = req.session;
-    //let password = null;
 
     if (sess.password) {
         logger.log("debug", "router.post: Password provided, so we use it");
