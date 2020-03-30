@@ -39,7 +39,8 @@
     "uglify-es": "github:mishoo/UglifyJS2#harmony",
     "uglifycss": "~0.0.29",
     "validator": "~11.1.0",
-    "winston": "~3.2.1"
+    "winston": "~3.2.1",
+    "acorn": "^5.7.4"
   },
   "devDependencies": {
     "lodash": ">=4.17.13"
