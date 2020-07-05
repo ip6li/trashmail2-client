@@ -24,21 +24,23 @@
 const Config = require('../config').Config;
 const config = Config.getConfig();
 const csrf = require('csurf');
-const csrfProtection = csrf({
-    cookie: {
-        key: typeof config.cookie.key === "undefined" ? "insecure-csrf" : config.cookie.key,
-        httpOnly: Config.getBool(config.cookie.httpOnly),
-        secure: Config.getBool(config.cookie.secure),
-        domain: typeof config.cookie.domain === "undefined" ? "localhost" : config.cookie.domain,
-        sameSite: typeof config.cookie.sameSite === "undefined" ? true : config.cookie.sameSite
-    }
-});
+const cookieSettings = {
+    key: typeof config.cookie.key === "undefined" ? "insecure-csrf" : config.cookie.key,
+    httpOnly: Config.getBool(config.cookie.httpOnly),
+    secure: Config.getBool(config.cookie.secure),
+    domain: typeof config.cookie.domain === "undefined" ? "localhost" : config.cookie.domain,
+    sameSite: typeof config.cookie.sameSite === "undefined" ? true : config.cookie.sameSite
+};
+const csrfProtection = csrf(cookieSettings);
+
 const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const Trashmail = require ("../trashmail").Trashmail;
 const logger = require ("../logger").logger;
 const Lib = require ("../lib").Lib;
+
+
 
 
 /* GET home page. */

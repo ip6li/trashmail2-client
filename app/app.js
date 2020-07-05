@@ -84,6 +84,19 @@
                 }
 
                 app.use(function (err, req, res, next) {
+                    if (err.code !== 'EBADCSRFTOKEN') { return next(err); }
+
+                    // handle CSRF token errors here
+                    res.status(403);
+                    res.render("error", {
+                        message: err.message,
+                        error: err
+                    });
+                    const logmsg = util.format("CSRF tampered with %s: %s (%o)", err.status, err.message, req._remoteAddress);
+                    logger.log("error", logmsg);
+                });
+
+                app.use(function (err, req, res, next) {
                     res.status(err.status || 500);
                     res.render("error", {
                         message: err.message,
