@@ -19,7 +19,7 @@
     "csurf": "~1.10.0",
     "debug": "~4.1.1",
     "dnsbl-lookup": "~0.3.3",
-    "express": "~4.17.1",
+    "express": "^4.17.1",
     "express-minify": "~1.0.0",
     "express-session": "~1.16.2",
     "full-icu": "~1.3.0",
@@ -43,6 +43,6 @@
     "acorn": "^5.7.4"
   },
   "devDependencies": {
-    "lodash": ">=4.17.13"
+    "lodash": ">=4.17.19"
   }
 }
