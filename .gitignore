@@ -6,7 +6,6 @@ app/node_modules
 app/sessions
 app/cache
 app/client_js/qrcode.bundle.js
-app/client_js/package-lock.json
 app/client_js/validator.bundle.js
 app/public/javascripts/validator.min.js
 app/public/javascripts/main.min.js
@@ -24,5 +23,4 @@ test/node_modules
 test/test-libs
 test/geckodriver.log
 test/screen.*.png
-test/package-lock.json
 logs/trashmail.log
